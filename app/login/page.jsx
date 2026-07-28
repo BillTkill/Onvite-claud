@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/AuthProvider";
+import { signIn, getSession } from "next-auth/react";
 import { useI18n } from "@/components/I18nProvider";
 
 const DEMO = [
@@ -12,20 +12,27 @@ const DEMO = [
 ];
 
 export default function LoginPage() {
-  const { login } = useAuth();
   const { t } = useI18n();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
+  const [pending, setPending] = useState(false);
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     setError("");
-    const res = login(email, password);
-    if (res.ok) router.push(res.user.role === "admin" ? "/admin" : "/panel");
-    else setError(t("login.errorCreds"));
+    setPending(true);
+    const res = await signIn("credentials", { email, password, redirect: false });
+    if (res?.error) {
+      setError(t("login.errorCreds"));
+      setPending(false);
+      return;
+    }
+    const session = await getSession();
+    router.push(session?.user?.role === "ADMIN" ? "/admin" : "/panel");
+    router.refresh();
   }
 
   return (
@@ -59,7 +66,7 @@ export default function LoginPage() {
           />
           {error && <p className="field-error" style={{ marginTop: 0 }}>{error}</p>}
           {info && <p style={{ color: "var(--ink-soft)", fontSize: 12 }}>{info}</p>}
-          <button type="submit" className="btn btn-gold btn-block" style={{ padding: "11px 16px", fontSize: 14, fontWeight: 600 }}>
+          <button type="submit" disabled={pending} className="btn btn-gold btn-block" style={{ padding: "11px 16px", fontSize: 14, fontWeight: 600 }}>
             {t("login.submit")}
           </button>
         </form>

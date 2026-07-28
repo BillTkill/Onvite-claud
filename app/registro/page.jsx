@@ -3,11 +3,10 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/components/AuthProvider";
+import { signIn } from "next-auth/react";
 import { useI18n } from "@/components/I18nProvider";
 
 export default function RegistroPage() {
-  const { register } = useAuth();
   const { t } = useI18n();
   const router = useRouter();
 
@@ -19,10 +18,11 @@ export default function RegistroPage() {
 
   const [form, setForm] = useState({ name: "", username: "", email: "", password: "", bot: "" });
   const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     setError("");
     if (form.password.length < 8) {
@@ -33,14 +33,26 @@ export default function RegistroPage() {
       setError(t("register.errBot"));
       return;
     }
-    const res = register({
-      name: form.name.trim(),
-      username: form.username.trim(),
-      email: form.email.trim(),
-      password: form.password,
+    setPending(true);
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name.trim(),
+        username: form.username.trim(),
+        email: form.email.trim(),
+        password: form.password,
+      }),
     });
-    if (res.ok) router.push("/panel");
-    else setError(t("register.errExists"));
+    if (!res.ok) {
+      setError(res.status === 409 ? t("register.errExists") : t("register.errShortPass"));
+      setPending(false);
+      return;
+    }
+    // New account has no plan → locked panel.
+    await signIn("credentials", { email: form.email.trim(), password: form.password, redirect: false });
+    router.push("/panel");
+    router.refresh();
   }
 
   return (
@@ -87,7 +99,7 @@ export default function RegistroPage() {
 
           {error && <p className="field-error" style={{ marginTop: 0 }}>{error}</p>}
 
-          <button type="submit" className="btn btn-gold btn-block" style={{ padding: "11px 16px", fontSize: 14, fontWeight: 600 }}>
+          <button type="submit" disabled={pending} className="btn btn-gold btn-block" style={{ padding: "11px 16px", fontSize: 14, fontWeight: 600 }}>
             {t("register.submit")}
           </button>
         </form>

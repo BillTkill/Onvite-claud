@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: onvite-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: onvite
+      POSTGRES_PASSWORD: onvite
+      POSTGRES_DB: onvite
+    ports:
+      - "5432:5432"
+    volumes:
+      - onvite_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U onvite -d onvite"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  onvite_pgdata:

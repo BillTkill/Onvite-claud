@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import Icon from "@/components/Icon";
-import { useAuth } from "@/components/AuthProvider";
 
 const NAV = [
   { href: "/admin", label: "Resumen", icon: "layout" },
@@ -17,8 +17,6 @@ const NAV = [
 
 export default function AdminShell({ children }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { logout } = useAuth();
 
   return (
     <div className="admin-shell">
@@ -41,10 +39,7 @@ export default function AdminShell({ children }) {
           <button
             className="admin-nav__item"
             style={{ color: "#dc2626", width: "100%", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
-            onClick={() => {
-              logout();
-              router.push("/");
-            }}
+            onClick={() => signOut({ callbackUrl: "/" })}
           >
             Cerrar sesión
           </button>

@@ -2,47 +2,52 @@
 
 import { useState } from "react";
 import Icon from "@/components/Icon";
-import { EVENT, GUESTS, STATUS_STYLE } from "@/lib/event";
+import { useI18n } from "@/components/I18nProvider";
 
-/* ---- Small helpers ------------------------------------------------------ */
+const STATUS_STYLE = {
+  confirmado: { bg: "#dcfce7", fg: "#15803d" },
+  pendiente: { bg: "#fef9c3", fg: "#a16207" },
+  rechazado: { bg: "#fee2e2", fg: "#dc2626" },
+};
 
-export function PanelHero() {
+export function PanelHero({ title, dateLabel, venue }) {
+  const { t } = useI18n();
   return (
     <div>
-      <p style={{ fontSize: 14, color: "var(--brand600)" }}>Panel del evento</p>
-      <h1 className="serif" style={{ fontSize: "clamp(24px,4vw,30px)", fontWeight: 700, color: "#1c1917" }}>{EVENT.title}</h1>
-      <p style={{ color: "#4b5563", marginTop: 4, fontSize: 15 }}>
-        {EVENT.dateLabel} · {EVENT.venue}
-      </p>
+      <p style={{ fontSize: 14, color: "var(--brand600)" }}>{t("panel.eventPanel")}</p>
+      <h1 className="serif" style={{ fontSize: "clamp(24px,4vw,30px)", fontWeight: 700, color: "#1c1917" }}>{title}</h1>
+      <p style={{ color: "#4b5563", marginTop: 4, fontSize: 15 }}>{dateLabel} · {venue}</p>
     </div>
   );
 }
 
-export function DesignCard({ label = "Tu diseño", designName, gradient, lines }) {
+export function DesignCard({ couple, label, designName, gradient, lines }) {
+  const { t } = useI18n();
   return (
     <div className="pcard" style={{ padding: 16 }}>
       <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: ".05em", textTransform: "uppercase", color: "var(--brand600)", marginBottom: 8 }}>
         {label}{designName ? `: ${designName}` : ""}
       </p>
       <div style={{ borderRadius: 12, padding: 24, textAlign: "center", background: gradient }}>
-        <p className="serif" style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".2em", color: "#292524" }}>Nos casamos</p>
-        <p className="serif" style={{ marginTop: 8, fontSize: 24, color: "#1c1917" }}>{EVENT.couple}</p>
+        <p className="serif" style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".2em", color: "#292524" }}>{t("panel.weGetMarried")}</p>
+        <p className="serif" style={{ marginTop: 8, fontSize: 24, color: "#1c1917" }}>{couple}</p>
         <div style={{ margin: "12px auto", height: 1, width: 64, background: "rgba(41,37,36,.3)" }} />
-        {(lines || [`${EVENT.dateLabel} · ${EVENT.time}`]).map((l) => (
+        {(lines || []).map((l) => (
           <p key={l} style={{ fontSize: 12, color: "#292524" }}>{l}</p>
         ))}
       </div>
       <p style={{ textAlign: "center", marginTop: 12, fontSize: 14, fontWeight: 600, color: "var(--brand700)" }}>
-        Ver / compartir invitación
+        {t("panel.viewShare")}
       </p>
     </div>
   );
 }
 
 export function EventDetails({ rows }) {
+  const { t } = useI18n();
   return (
     <div className="pcard">
-      <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>Detalles del evento</h2>
+      <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>{t("panel.eventDetails")}</h2>
       <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, fontSize: 14 }}>
         {rows.map((r) => (
           <div key={r.label}>
@@ -57,7 +62,7 @@ export function EventDetails({ rows }) {
           borderRadius: 999, padding: "8px 16px", fontSize: 14, fontWeight: 600, color: "var(--brand700)",
         }}
       >
-        <Icon name="mapPin" size={15} /> Ver ubicación en el mapa
+        <Icon name="mapPin" size={15} /> {t("panel.viewOnMap")}
       </span>
     </div>
   );
@@ -72,26 +77,28 @@ export function StatCard({ label, value, color, compact }) {
   );
 }
 
-export function StatRow({ compact }) {
+export function StatRow({ stats, daysLeft, compact }) {
+  const { t } = useI18n();
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: compact ? 12 : 16 }}>
-      <StatCard label="Confirmados" value="5" color="#16a34a" compact={compact} />
-      <StatCard label="Pendientes" value="2" color="#ca8a04" compact={compact} />
-      <StatCard label="No asisten" value="1" color="#ef4444" compact={compact} />
-      <StatCard label={compact ? "Días" : "Días restantes"} value={String(EVENT.daysLeft)} color="var(--brand600)" compact={compact} />
+      <StatCard label={t("panel.stats.confirmados")} value={String(stats.confirmados)} color="#16a34a" compact={compact} />
+      <StatCard label={t("panel.stats.pendientes")} value={String(stats.pendientes)} color="#ca8a04" compact={compact} />
+      <StatCard label={t("panel.stats.noAsisten")} value={String(stats.rechazados)} color="#ef4444" compact={compact} />
+      <StatCard label={compact ? t("panel.stats.dias") : t("panel.stats.diasRestantes")} value={String(daysLeft)} color="var(--brand600)" compact={compact} />
     </div>
   );
 }
 
-export function AttendanceBar() {
-  const percent = Math.round((EVENT.attending / EVENT.totalGuests) * 100);
+export function AttendanceBar({ attending, total }) {
+  const { t } = useI18n();
+  const percent = total > 0 ? Math.round((attending / total) * 100) : 0;
   return (
     <div className="pcard">
       <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
         <div>
-          <p style={{ fontSize: 14, color: "#6b7280" }}>Personas que asistirán (con acompañantes)</p>
+          <p style={{ fontSize: 14, color: "#6b7280" }}>{t("panel.attendance.title")}</p>
           <p className="serif" style={{ fontSize: 28, fontWeight: 700, color: "#1c1917" }}>
-            {EVENT.attending} <span style={{ fontSize: 16, fontWeight: 400, color: "#9ca3af" }}>de {EVENT.totalGuests}</span>
+            {attending} <span style={{ fontSize: 16, fontWeight: 400, color: "#9ca3af" }}>{t("panel.attendance.of")} {total}</span>
           </p>
         </div>
         <span style={{ fontSize: 22, fontWeight: 700, color: "var(--brand600)" }}>{percent}%</span>
@@ -104,11 +111,12 @@ export function AttendanceBar() {
 }
 
 export function ShareCard({ inline }) {
+  const { t } = useI18n();
   const buttons = (
     <>
-      <span className="share-btn share-btn--wa">Compartir por WhatsApp</span>
-      <span className="share-btn">Copiar enlace</span>
-      <span className="share-btn">Descargar código QR</span>
+      <span className="share-btn share-btn--wa">{t("panel.share.whatsapp")}</span>
+      <span className="share-btn">{t("panel.share.copy")}</span>
+      <span className="share-btn">{t("panel.share.qr")}</span>
     </>
   );
   if (inline) {
@@ -116,10 +124,8 @@ export function ShareCard({ inline }) {
       <div className="pcard">
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
           <div>
-            <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>Comparte tu invitación</h2>
-            <p style={{ color: "#6b7280", marginTop: 2, fontSize: 14 }}>
-              Un solo enlace para todos tus invitados — por WhatsApp, enlace o código QR.
-            </p>
+            <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>{t("panel.share.title")}</h2>
+            <p style={{ color: "#6b7280", marginTop: 2, fontSize: 14 }}>{t("panel.share.subtitle")}</p>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>{buttons}</div>
         </div>
@@ -128,16 +134,15 @@ export function ShareCard({ inline }) {
   }
   return (
     <div className="pcard" style={{ padding: 24 }}>
-      <h2 className="serif" style={{ fontSize: 16, fontWeight: 700, color: "#1c1917" }}>Comparte tu invitación</h2>
+      <h2 className="serif" style={{ fontSize: 16, fontWeight: 700, color: "#1c1917" }}>{t("panel.share.title")}</h2>
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>{buttons}</div>
     </div>
   );
 }
 
-/* ---- Upload permissions (interactive) ----------------------------------- */
-
-export function UploadPermissions() {
-  const eligible = GUESTS.filter((g) => g.status !== "rechazado");
+export function UploadPermissions({ guests }) {
+  const { t } = useI18n();
+  const eligible = guests.filter((g) => g.status !== "rechazado");
   const [mode, setMode] = useState("activados"); // "todos" | "activados"
   const [perms, setPerms] = useState(() => Object.fromEntries(eligible.map((g) => [g.name, g.canUpload])));
   const count = Object.values(perms).filter(Boolean).length;
@@ -146,13 +151,11 @@ export function UploadPermissions() {
     <div className="pcard" style={{ borderRadius: 20, padding: 24, boxShadow: "0 6px 20px rgba(28,25,23,.06)" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <div>
-          <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>Quién puede subir al álbum</h2>
-          <p style={{ color: "#6b7280", marginTop: 2, fontSize: 13 }}>
-            Solo los invitados que actives pueden subir fotos y videos — así proteges tu álbum de contenido no deseado.
-          </p>
+          <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>{t("panel.upload.title")}</h2>
+          <p style={{ color: "#6b7280", marginTop: 2, fontSize: 13 }}>{t("panel.upload.subtitle")}</p>
         </div>
         <span style={{ flex: "none", background: "var(--gold-soft)", color: "var(--gold-deep)", borderRadius: 999, padding: "6px 12px", fontSize: 12, fontWeight: 600 }}>
-          {count} con permiso
+          {t("panel.upload.withPermission", { n: count })}
         </span>
       </div>
 
@@ -164,12 +167,12 @@ export function UploadPermissions() {
         }}
       >
         <div>
-          <p style={{ fontWeight: 700, fontSize: 14, color: "#1c1917" }}>¿Quién puede subir?</p>
-          <p style={{ fontSize: 12, color: "#6b7280" }}>Cámbialo cuando quieras desde tu panel.</p>
+          <p style={{ fontWeight: 700, fontSize: 14, color: "#1c1917" }}>{t("panel.upload.whoCanUpload")}</p>
+          <p style={{ fontSize: 12, color: "#6b7280" }}>{t("panel.upload.changeAnytime")}</p>
         </div>
         <div className="pill-toggle">
-          <button data-active={mode === "todos"} onClick={() => setMode("todos")}>Todos los invitados</button>
-          <button data-active={mode === "activados"} onClick={() => setMode("activados")}>Solo los que yo active</button>
+          <button data-active={mode === "todos"} onClick={() => setMode("todos")}>{t("panel.upload.all")}</button>
+          <button data-active={mode === "activados"} onClick={() => setMode("activados")}>{t("panel.upload.onlyActive")}</button>
         </div>
       </div>
 
@@ -187,13 +190,13 @@ export function UploadPermissions() {
             >
               <div>
                 <p style={{ fontWeight: 600, fontSize: 13, color: "#1c1917" }}>{g.name}</p>
-                <p style={{ fontSize: 11, color: "#9ca3af", textTransform: "capitalize" }}>{g.status}</p>
+                <p style={{ fontSize: 11, color: "#9ca3af", textTransform: "capitalize" }}>{t(`panel.status.${g.status}`)}</p>
               </div>
               <button
                 className="toggle-switch"
                 data-on={on}
                 aria-pressed={on}
-                aria-label={`Permitir a ${g.name}`}
+                aria-label={t("panel.upload.allow", { name: g.name })}
                 disabled={disabled}
                 style={{ opacity: disabled ? 0.6 : 1, cursor: disabled ? "not-allowed" : "pointer" }}
                 onClick={() => setPerms((p) => ({ ...p, [g.name]: !p[g.name] }))}
@@ -208,11 +211,11 @@ export function UploadPermissions() {
   );
 }
 
-/* ---- Guest list (interactive filter) ------------------------------------ */
-
-export function GuestList({ withFilter = true }) {
+export function GuestList({ guests, withFilter = true }) {
+  const { t } = useI18n();
   const [filter, setFilter] = useState("todos");
-  const rows = filter === "todos" ? GUESTS : GUESTS.filter((g) => g.status === filter);
+  const rows = filter === "todos" ? guests : guests.filter((g) => g.status === filter);
+  const filters = ["todos", "confirmado", "pendiente", "rechazado"];
 
   return (
     <div className="pcard" style={{ padding: 0 }}>
@@ -222,10 +225,10 @@ export function GuestList({ withFilter = true }) {
           gap: 12, borderBottom: "1px solid var(--brand100)", padding: "16px 20px",
         }}
       >
-        <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>Lista de invitados</h2>
+        <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>{t("panel.guests.title")}</h2>
         {withFilter && (
           <div style={{ display: "flex", gap: 4, border: "1px solid var(--brand200)", borderRadius: 999, padding: 4, fontSize: 12, flexWrap: "wrap" }}>
-            {["todos", "confirmado", "pendiente", "rechazado"].map((f) => (
+            {filters.map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -235,7 +238,7 @@ export function GuestList({ withFilter = true }) {
                   color: filter === f ? "#fff" : "var(--brand700)",
                 }}
               >
-                {f}
+                {f === "todos" ? t("panel.guests.filterTodos") : t(`panel.status.${f}`)}
               </button>
             ))}
           </div>
@@ -243,7 +246,7 @@ export function GuestList({ withFilter = true }) {
       </div>
       <div>
         {rows.map((g, i) => {
-          const st = STATUS_STYLE[g.status];
+          const st = STATUS_STYLE[g.status] || STATUS_STYLE.pendiente;
           return (
             <div
               key={g.name}
@@ -255,24 +258,22 @@ export function GuestList({ withFilter = true }) {
               <div>
                 <p style={{ fontWeight: 600, color: "#1c1917" }}>{g.name}</p>
                 <p style={{ fontSize: 12, color: "#6b7280" }}>
-                  {g.companions > 0 ? `+${g.companions} acompañante(s)` : "sin acompañantes"} · {g.channel}
+                  {g.companions > 0 ? t("panel.guests.companions", { n: g.companions }) : t("panel.guests.noCompanions")} · {t(`panel.channel.${g.channel}`)}
                 </p>
               </div>
               <span style={{ background: st.bg, color: st.fg, borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600 }}>
-                {st.label}
+                {t(`panel.status.${g.status}`)}
               </span>
             </div>
           );
         })}
         {rows.length === 0 && (
-          <p style={{ padding: "24px 20px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>Sin invitados en este estado.</p>
+          <p style={{ padding: "24px 20px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>{t("panel.guests.empty")}</p>
         )}
       </div>
     </div>
   );
 }
-
-/* ---- VIP extras --------------------------------------------------------- */
 
 export function ExtraCard({ icon, title, body, meta, cta, ctaWhatsapp }) {
   return (
@@ -288,10 +289,7 @@ export function ExtraCard({ icon, title, body, meta, cta, ctaWhatsapp }) {
       <p style={{ fontWeight: 700, fontSize: 15, color: "#1c1917", marginTop: 14 }}>{title}</p>
       <p style={{ color: "#6b7280", marginTop: 6, fontSize: 12, lineHeight: 1.5, flex: 1 }}>{body}</p>
       <p style={{ marginTop: 10, fontSize: 12, fontWeight: 700, color: "var(--brand700)" }}>{meta}</p>
-      <span
-        className={ctaWhatsapp ? "share-btn share-btn--wa" : "share-btn"}
-        style={{ marginTop: 14, textAlign: "center" }}
-      >
+      <span className={ctaWhatsapp ? "share-btn share-btn--wa" : "share-btn"} style={{ marginTop: 14, textAlign: "center" }}>
         {cta}
       </span>
     </div>

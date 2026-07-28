@@ -2,12 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import Seal from "./Seal";
 import Icon from "./Icon";
-import { useAuth } from "./AuthProvider";
 import { useI18n } from "./I18nProvider";
-import { LOCALES } from "@/lib/i18n/config";
+import LangSelect from "./LangSelect";
 
 const NAV = [
   { href: "/templates", key: "templates" },
@@ -16,6 +15,11 @@ const NAV = [
   { href: "/#preguntas", key: "faq" },
   { href: "/#contacto", key: "contact" },
 ];
+
+function initials(name = "") {
+  const parts = name.trim().split(/\s+/).slice(0, 2);
+  return parts.map((p) => p[0]?.toUpperCase() ?? "").join("") || "·";
+}
 
 function useClickOutside(onClose) {
   const ref = useRef(null);
@@ -30,63 +34,22 @@ function useClickOutside(onClose) {
   return ref;
 }
 
-function LangSelect() {
-  const { locale, setLocale, t } = useI18n();
-  const [open, setOpen] = useState(false);
-  const ref = useClickOutside(() => setOpen(false));
-  return (
-    <div className="lang" ref={ref}>
-      <button
-        className="lang__btn"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        title={t("lang.label")}
-      >
-        {locale.toUpperCase()} <Icon name="chevronDown" size={14} />
-      </button>
-      {open && (
-        <ul className="menu" role="listbox" style={{ minWidth: 150 }}>
-          {LOCALES.map((l) => (
-            <li key={l.code}>
-              <button
-                className="menu__item"
-                role="option"
-                aria-selected={l.code === locale}
-                onClick={() => {
-                  setLocale(l.code);
-                  setOpen(false);
-                }}
-              >
-                <span style={{ fontWeight: 600, width: 26 }}>{l.code.toUpperCase()}</span>
-                {l.label}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
 function AccountMenu({ user }) {
   const [open, setOpen] = useState(false);
   const ref = useClickOutside(() => setOpen(false));
-  const { logout } = useAuth();
   const { t } = useI18n();
-  const router = useRouter();
-  const firstName = user.name.split(" ")[0];
+  const firstName = (user.name || "").split(" ")[0];
 
   return (
     <div className="account" ref={ref}>
       <button className="account__chip" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
-        <span className="avatar">{user.initials}</span>
+        <span className="avatar">{initials(user.name)}</span>
         {firstName} <Icon name="chevronDown" size={14} />
       </button>
       {open && (
         <div className="menu account__menu">
           <div className="account__head">
-            <span className="avatar avatar--lg">{user.initials}</span>
+            <span className="avatar avatar--lg">{initials(user.name)}</span>
             <div>
               <p style={{ fontSize: 14, fontWeight: 600, color: "var(--ink)" }}>{user.name}</p>
               <p style={{ fontSize: 12, color: "var(--ink-soft)" }}>{user.email}</p>
@@ -98,21 +61,14 @@ function AccountMenu({ user }) {
             <Link href="/panel" className="menu__item menu__item--gold" onClick={() => setOpen(false)}>
               <Icon name="layout" size={16} /> {t("account.myPanel")}
             </Link>
-            {user.role === "admin" && (
+            {user.role === "ADMIN" && (
               <Link href="/admin" className="menu__item" onClick={() => setOpen(false)}>
                 <Icon name="key" size={16} /> {t("account.adminPanel")}
               </Link>
             )}
           </div>
           <div style={{ borderTop: "1px solid var(--border)", padding: 6 }}>
-            <button
-              className="menu__item menu__item--danger"
-              onClick={() => {
-                logout();
-                setOpen(false);
-                router.push("/");
-              }}
-            >
+            <button className="menu__item menu__item--danger" onClick={() => signOut({ callbackUrl: "/" })}>
               <Icon name="logout" size={16} /> {t("account.logout")}
             </button>
           </div>
@@ -123,7 +79,9 @@ function AccountMenu({ user }) {
 }
 
 export default function SiteHeader() {
-  const { user, ready } = useAuth();
+  const { data: session, status } = useSession();
+  const user = session?.user;
+  const ready = status !== "loading";
   const { t } = useI18n();
   const [mobileOpen, setMobileOpen] = useState(false);
 

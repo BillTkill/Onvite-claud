@@ -1,0 +1,152 @@
+// Onvite — data model
+// PostgreSQL + Prisma. Auth is handled by Auth.js (Credentials + JWT), so the
+// User table is managed directly here (no adapter tables yet). Adding Google
+// OAuth later means introducing the Account/Session models + the Prisma adapter.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum Plan {
+  BASICO
+  PRO
+  VIP
+}
+
+enum RsvpStatus {
+  CONFIRMADO
+  PENDIENTE
+  RECHAZADO
+}
+
+enum GuestChannel {
+  WHATSAPP
+  CORREO
+}
+
+enum ConsultaChannel {
+  WHATSAPP
+  INSTAGRAM
+  TELEGRAM
+  CORREO
+  FACEBOOK
+}
+
+enum PaymentStatus {
+  PENDIENTE
+  PAGADO
+}
+
+enum ContactStatus {
+  SIN_CONTACTAR
+  CONTACTADO
+  CERRADO
+}
+
+enum AccessState {
+  POR_HABILITAR
+  ACTIVO
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(CLIENT)
+  image        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  event        Event?
+  reservations Reservation[]
+}
+
+/// The couple's wedding. A user with an active Event sees their panel; without
+/// one (or with active = false) they see the "locked panel".
+model Event {
+  id                 String   @id @default(cuid())
+  owner              User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId            String   @unique
+  coupleName         String
+  title              String
+  dateTime           DateTime
+  venue              String
+  address            String?
+  dressCode          String?
+  plan               Plan     @default(BASICO)
+  designName         String?
+  templateSlug       String?
+  totalGuests        Int      @default(0)
+  music              String?
+  albumPhotosPerGuest Int?
+  albumDays          Int?
+  accessDurationDays Int?
+  active             Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  guests             Guest[]
+}
+
+model Guest {
+  id         String       @id @default(cuid())
+  event      Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId    String
+  name       String
+  companions Int          @default(0)
+  channel    GuestChannel @default(WHATSAPP)
+  status     RsvpStatus   @default(PENDIENTE)
+  canUpload  Boolean      @default(false)
+  createdAt  DateTime     @default(now())
+
+  @@index([eventId])
+}
+
+/// A booking request from /book. Also powers the admin CRM (Clientes) and the
+/// access-enablement (Accesos) workflow.
+model Reservation {
+  id            String        @id @default(cuid())
+  user          User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userId        String?
+  names         String
+  email         String
+  phone         String?
+  eventType     String
+  eventDate     DateTime?
+  city          String?
+  place         String?
+  notes         String?
+  plan          String?
+  templateSlug  String?
+  amount        Int?
+  paymentMethod String?
+  contactStatus ContactStatus @default(SIN_CONTACTAR)
+  paymentStatus PaymentStatus @default(PENDIENTE)
+  accessState   AccessState   @default(POR_HABILITAR)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([userId])
+}
+
+/// Unified inbox message (WhatsApp / Instagram / Telegram / email …).
+model Consulta {
+  id         String          @id @default(cuid())
+  channel    ConsultaChannel
+  fromName   String
+  text       String
+  receivedAt DateTime        @default(now())
+  attended   Boolean         @default(false)
+}

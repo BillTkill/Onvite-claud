@@ -1,23 +1,30 @@
 "use client";
 
+import Link from "next/link";
 import { PanelHero, DesignCard, EventDetails, ShareCard } from "./parts";
-import { EVENT } from "@/lib/event";
+import { useI18n } from "@/components/I18nProvider";
+import { formatDate, formatTime } from "@/lib/format";
 
-const PINK = "linear-gradient(160deg,rgba(249,168,212,.4),#f9a8d4)";
+const GOLD = "linear-gradient(160deg,rgba(252,211,77,.33),#fcd34d)";
 
-export default function BasicPanel({ onUpgrade }) {
+export default function BasicPanel({ view }) {
+  const { t, locale } = useI18n();
+  const d = new Date(view.dateISO);
+  const dateLabel = formatDate(d, locale);
+  const time = formatTime(d, locale);
+
   return (
     <>
-      <PanelHero />
+      <PanelHero title={view.title} dateLabel={dateLabel} venue={view.venue} />
 
       <div className="p-split" style={{ marginTop: 24 }}>
-        <DesignCard designName="Rosa Eterno" gradient={PINK} lines={[`${EVENT.dateLabel} · ${EVENT.time}`]} />
+        <DesignCard couple={view.couple} label={t("panel.yourDesign")} designName={view.designName} gradient={GOLD} lines={[`${dateLabel} · ${time}`]} />
         <EventDetails
           rows={[
-            { label: "Fecha", value: EVENT.dateLabel },
-            { label: "Hora", value: EVENT.time },
-            { label: "Lugar", value: EVENT.venue },
-            { label: "Plan contratado", value: "Básico" },
+            { label: t("panel.fields.date"), value: dateLabel },
+            { label: t("panel.fields.time"), value: time },
+            { label: t("panel.fields.place"), value: view.venue },
+            { label: t("panel.planContracted"), value: t("panel.planShort.basico") },
           ]}
         />
       </div>
@@ -25,14 +32,14 @@ export default function BasicPanel({ onUpgrade }) {
       <div className="p-half" style={{ marginTop: 16 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div className="pcard" style={{ textAlign: "center" }}>
-            <p style={{ fontSize: 14, color: "#6b7280" }}>Cuenta regresiva</p>
-            <p className="serif" style={{ marginTop: 2, fontSize: 36, fontWeight: 700, color: "var(--brand600)" }}>{EVENT.daysLeft}</p>
-            <p style={{ fontSize: 13, color: "#9ca3af" }}>días para el gran día</p>
+            <p style={{ fontSize: 14, color: "#6b7280" }}>{t("panel.basic.countdown")}</p>
+            <p className="serif" style={{ marginTop: 2, fontSize: 36, fontWeight: 700, color: "var(--brand600)" }}>{view.daysLeft}</p>
+            <p style={{ fontSize: 13, color: "#9ca3af" }}>{t("panel.basic.daysToBigDay")}</p>
           </div>
           <div className="pcard" style={{ textAlign: "center" }}>
-            <p style={{ fontSize: 14, color: "#6b7280" }}>Confirmaron asistencia</p>
-            <p className="serif" style={{ marginTop: 2, fontSize: 36, fontWeight: 700, color: "#16a34a" }}>37</p>
-            <p style={{ fontSize: 13, color: "#9ca3af" }}>solo el total — sin lista de nombres</p>
+            <p style={{ fontSize: 14, color: "#6b7280" }}>{t("panel.basic.confirmedAttendance")}</p>
+            <p className="serif" style={{ marginTop: 2, fontSize: 36, fontWeight: 700, color: "#16a34a" }}>{view.stats.confirmados}</p>
+            <p style={{ fontSize: 13, color: "#9ca3af" }}>{t("panel.basic.totalOnly")}</p>
           </div>
         </div>
         <ShareCard />
@@ -47,25 +54,15 @@ export default function BasicPanel({ onUpgrade }) {
         }}
       >
         <div>
-          <p className="serif" style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }}>
-            ¿Quieres saber <em>quién</em> asiste?
-          </p>
-          <p style={{ color: "var(--ink-soft)", marginTop: 4, fontSize: 14 }}>
-            En Básico ves cuántos confirmaron en total. El plan Pro activa el RSVP en vivo con la lista de nombres y el seguimiento de acompañantes.
-          </p>
+          <p className="serif" style={{ fontSize: 17, fontWeight: 700, color: "var(--ink)" }} dangerouslySetInnerHTML={{ __html: t("panel.basic.upgradeTitle") }} />
+          <p style={{ color: "var(--ink-soft)", marginTop: 4, fontSize: 14 }}>{t("panel.basic.upgradeBody")}</p>
         </div>
-        <button
-          className="btn btn-dark"
-          style={{ flex: "none", padding: "11px 22px", fontSize: 14, fontWeight: 600 }}
-          onClick={onUpgrade}
-        >
-          Mejorar a Pro
-        </button>
+        <Link href="/#precios" className="btn btn-dark" style={{ flex: "none", padding: "11px 22px", fontSize: 14, fontWeight: 600 }}>
+          {t("panel.basic.upgradeCta")}
+        </Link>
       </div>
 
-      <p style={{ textAlign: "center", color: "#9ca3af", marginTop: 20, fontSize: 12 }}>
-        Panel Básico: invitación, datos del evento, cuenta regresiva, total de confirmaciones y compartir. Sin lista de nombres.
-      </p>
+      <p style={{ textAlign: "center", color: "#9ca3af", marginTop: 20, fontSize: 12 }}>{t("panel.basic.note")}</p>
     </>
   );
 }

@@ -2,20 +2,22 @@
 
 import Link from "next/link";
 import Icon from "@/components/Icon";
-
-const CHIPS = [
-  { name: "Normal", price: "$18", highlight: false },
-  { name: "Pro", price: "$35", highlight: true },
-  { name: "Premium VIP", price: "$55", highlight: false },
-];
+import { useI18n } from "@/components/I18nProvider";
 
 export default function LockedPanel() {
+  const { t } = useI18n();
+  const chips = [
+    { name: t("panel.locked.normal"), price: "$18", highlight: false },
+    { name: t("panel.locked.pro"), price: "$35", highlight: true },
+    { name: t("panel.locked.vip"), price: "$55", highlight: false },
+  ];
+
   return (
     <div style={{ position: "relative", borderRadius: 16, overflow: "hidden", minHeight: 520 }}>
       {/* blurred placeholder panel behind */}
       <div style={{ filter: "blur(3px)", opacity: 0.5, padding: 28, pointerEvents: "none" }} aria-hidden="true">
-        <p style={{ fontSize: 14, color: "var(--brand600)" }}>Panel del evento</p>
-        <h1 className="serif" style={{ fontSize: 28, fontWeight: 700, color: "#1c1917" }}>Tu evento</h1>
+        <p style={{ fontSize: 14, color: "var(--brand600)" }}>{t("panel.locked.eventPanel")}</p>
+        <h1 className="serif" style={{ fontSize: 28, fontWeight: 700, color: "#1c1917" }}>{t("panel.locked.yourEvent")}</h1>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginTop: 24 }}>
           {[0, 1, 2, 3].map((i) => (
             <div key={i} style={{ height: 90, background: "#fff", border: "1px solid var(--brand100)", borderRadius: 16 }} />
@@ -45,12 +47,10 @@ export default function LockedPanel() {
           >
             <Icon name="lock" size={26} />
           </span>
-          <h2 className="serif" style={{ marginTop: 20, fontSize: 24, fontWeight: 700, color: "var(--ink)" }}>Tu panel está bloqueado</h2>
-          <p style={{ color: "var(--ink-soft)", marginTop: 12, fontSize: 14, lineHeight: 1.6 }}>
-            Para acceder a tu panel necesitas un plan activo. Elige el que prefieras y contáctanos para habilitarlo — en cuanto confirmemos el pago, tu panel se activa.
-          </p>
+          <h2 className="serif" style={{ marginTop: 20, fontSize: 24, fontWeight: 700, color: "var(--ink)" }}>{t("panel.locked.title")}</h2>
+          <p style={{ color: "var(--ink-soft)", marginTop: 12, fontSize: 14, lineHeight: 1.6 }}>{t("panel.locked.body")}</p>
           <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
-            {CHIPS.map((c) => (
+            {chips.map((c) => (
               <div
                 key={c.name}
                 style={{
@@ -66,7 +66,7 @@ export default function LockedPanel() {
             ))}
           </div>
           <Link href="/#precios" className="btn btn-dark btn-block" style={{ marginTop: 20, padding: 13, fontWeight: 600 }}>
-            Ver planes y precios
+            {t("panel.locked.viewPlans")}
           </Link>
           <a
             href="https://wa.me/59100000000"
@@ -75,11 +75,9 @@ export default function LockedPanel() {
             className="btn btn-whatsapp btn-block"
             style={{ marginTop: 10, padding: 13, fontWeight: 600 }}
           >
-            Contactar por WhatsApp para habilitar
+            {t("panel.locked.contactWhatsapp")}
           </a>
-          <p style={{ color: "var(--ink-soft)", marginTop: 14, fontSize: 12 }}>
-            ¿Ya tienes plan y sigues viendo esto? Escríbenos y lo habilitamos al instante.
-          </p>
+          <p style={{ color: "var(--ink-soft)", marginTop: 14, fontSize: 12 }}>{t("panel.locked.note")}</p>
         </div>
       </div>
     </div>

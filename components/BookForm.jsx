@@ -28,9 +28,29 @@ export default function BookForm() {
   const planTexts = t("book.plans");
   const eventTypes = t("book.eventTypes");
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
+    const planName = plan === "luxury" ? "Luxury" : "Standard";
+    try {
+      await fetch("/api/reservations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          plan: planName,
+          templateSlug: template,
+          names: values.names,
+          email: values.email,
+          phone: values.phone,
+          eventType: values.eventType,
+          date: values.date,
+          place: values.place,
+          notes: values.notes,
+        }),
+      });
+    } catch {
+      /* demo: proceed even if the request fails */
+    }
     router.push("/book/success");
   }
 

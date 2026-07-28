@@ -1,7 +1,6 @@
 import "./globals.css";
 import "./ui.css";
-import { AuthProvider } from "@/components/AuthProvider";
-import { I18nProvider } from "@/components/I18nProvider";
+import Providers from "@/components/Providers";
 
 export const metadata = {
   title: "Onvite — Invitaciones de boda digitales y RSVP online",
@@ -32,9 +31,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap"
         />
-        <I18nProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </I18nProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
