@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import Icon from "@/components/Icon";
 import { useI18n } from "@/components/I18nProvider";
 
@@ -275,7 +276,9 @@ export function GuestList({ guests, withFilter = true }) {
   );
 }
 
-export function ExtraCard({ icon, title, body, meta, cta, ctaWhatsapp }) {
+export function ExtraCard({ icon, title, body, meta, cta, ctaWhatsapp, href }) {
+  const ctaClass = ctaWhatsapp ? "share-btn share-btn--wa" : "share-btn";
+  const ctaStyle = { marginTop: 14, textAlign: "center", display: "block" };
   return (
     <div className="pcard" style={{ borderRadius: 20, padding: 22, boxShadow: "0 6px 20px rgba(28,25,23,.06)", display: "flex", flexDirection: "column" }}>
       <span
@@ -289,9 +292,11 @@ export function ExtraCard({ icon, title, body, meta, cta, ctaWhatsapp }) {
       <p style={{ fontWeight: 700, fontSize: 15, color: "#1c1917", marginTop: 14 }}>{title}</p>
       <p style={{ color: "#6b7280", marginTop: 6, fontSize: 12, lineHeight: 1.5, flex: 1 }}>{body}</p>
       <p style={{ marginTop: 10, fontSize: 12, fontWeight: 700, color: "var(--brand700)" }}>{meta}</p>
-      <span className={ctaWhatsapp ? "share-btn share-btn--wa" : "share-btn"} style={{ marginTop: 14, textAlign: "center" }}>
-        {cta}
-      </span>
+      {href ? (
+        <Link href={href} className={ctaClass} style={ctaStyle}>{cta}</Link>
+      ) : (
+        <span className={ctaClass} style={ctaStyle}>{cta}</span>
+      )}
     </div>
   );
 }

@@ -42,6 +42,7 @@ export default function ProPanel({ view }) {
           body={t("panel.pro.albumBody")}
           meta={t("panel.pro.albumMeta", { photos: view.albumPhotosPerGuest ?? 15, days: view.albumDays ?? 60 })}
           cta={t("panel.pro.albumCta")}
+          href="/panel/album"
         />
         <ExtraCard
           icon="gift"
@@ -49,6 +50,7 @@ export default function ProPanel({ view }) {
           body={t("panel.pro.giftsBody")}
           meta={t("panel.pro.giftsMeta")}
           cta={t("panel.pro.giftsCta")}
+          href="/panel/regalos"
         />
       </div>
 

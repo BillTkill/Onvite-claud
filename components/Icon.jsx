@@ -155,6 +155,27 @@ const PATHS = {
       <path d="m10.7 12.3 8.8-8.8M17 7l3 3M15 9l2 2" />
     </>
   ),
+  upload: (
+    <>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <path d="M17 8l-5-5-5 5M12 3v12" />
+    </>
+  ),
+  play: <path d="M6 4v16l14-8z" fill="currentColor" stroke="none" />,
+  plus: <path d="M12 5v14M5 12h14" />,
+  printer: (
+    <>
+      <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <rect x="6" y="14" width="12" height="8" rx="1" />
+    </>
+  ),
+  image: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path d="m21 15-5-5L5 21" />
+    </>
+  ),
 };
 
 export default function Icon({ name, size = 18, strokeWidth = 2, className, style }) {

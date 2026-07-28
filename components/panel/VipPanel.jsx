@@ -34,9 +34,9 @@ export default function VipPanel({ view }) {
         <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "var(--ink)" }}>{t("panel.vip.extras")}</h2>
       </div>
       <div className="grid grid-4" style={{ marginTop: 14, gap: 16 }}>
-        <ExtraCard icon="grid" title={t("panel.vip.albumTitle")} body={t("panel.vip.albumBody")} meta={t("panel.pro.albumMeta", { photos: view.albumPhotosPerGuest ?? 30, days: view.albumDays ?? 90 })} cta={t("panel.vip.albumCta")} />
-        <ExtraCard icon="gift" title={t("panel.vip.giftsTitle")} body={t("panel.vip.giftsBody")} meta={t("panel.vip.giftsMeta")} cta={t("panel.vip.giftsCta")} />
-        <ExtraCard icon="music" title={t("panel.vip.musicTitle")} body={t("panel.vip.musicBody")} meta={`♪ ${view.music || "—"}`} cta={t("panel.vip.musicCta")} />
+        <ExtraCard icon="grid" title={t("panel.vip.albumTitle")} body={t("panel.vip.albumBody")} meta={t("panel.pro.albumMeta", { photos: view.albumPhotosPerGuest ?? 30, days: view.albumDays ?? 90 })} cta={t("panel.vip.albumCta")} href="/panel/album" />
+        <ExtraCard icon="gift" title={t("panel.vip.giftsTitle")} body={t("panel.vip.giftsBody")} meta={t("panel.vip.giftsMeta")} cta={t("panel.vip.giftsCta")} href="/panel/regalos" />
+        <ExtraCard icon="music" title={t("panel.vip.musicTitle")} body={t("panel.vip.musicBody")} meta={`♪ ${view.music || "—"}`} cta={t("panel.vip.musicCta")} href="/panel/musica" />
         <ExtraCard icon="shield" title={t("panel.vip.supportTitle")} body={t("panel.vip.supportBody")} meta={t("panel.vip.supportMeta")} cta={t("panel.vip.supportCta")} ctaWhatsapp />
       </div>
 
