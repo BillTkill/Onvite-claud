@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { planStringToEnum } from "@/lib/admin-display";
+import { slugify } from "@/lib/format";
 
 /** Every admin mutation goes through this guard first. */
 async function requireAdmin() {
@@ -134,6 +135,7 @@ export async function grantAccess(userId, opts = {}) {
       venue: reservation?.city || "Por definir",
       plan,
       templateSlug,
+      slug: slugify(reservation?.names || user.name),
       active: true,
       accessDurationDays: duration,
       totalGuests: 0,
@@ -172,6 +174,7 @@ export async function createEventForUser(userId, plan = "BASICO") {
       dateTime: new Date(Date.now() + 60 * 86400000),
       venue: "Por definir",
       plan: value,
+      slug: slugify(user.name),
       active: true,
       accessDurationDays: 90,
       totalGuests: 0,
@@ -194,6 +197,8 @@ const EventEditSchema = z.object({
   plan: PlanEnum,
   templateSlug: z.string().trim().max(80).optional().or(z.literal("")),
   music: z.string().trim().max(200).optional().or(z.literal("")),
+  paymentQr: z.string().trim().max(400000).optional().or(z.literal("")), // holds an image data URL
+  albumUrl: z.string().trim().max(300).optional().or(z.literal("")),
   totalGuests: z.coerce.number().int().min(0).max(100000).optional(),
 });
 
@@ -202,7 +207,7 @@ export async function updateEvent(eventId, raw) {
   await requireAdmin();
   const data = EventEditSchema.parse(raw);
 
-  const event = await prisma.event.findUnique({ where: { id: eventId }, select: { id: true, dateTime: true } });
+  const event = await prisma.event.findUnique({ where: { id: eventId }, select: { id: true, dateTime: true, slug: true } });
   if (!event) return { ok: false, error: "Panel no encontrado." };
 
   // Combine date + time into a single DateTime, keeping the old one as fallback.
@@ -225,6 +230,9 @@ export async function updateEvent(eventId, raw) {
       plan: data.plan,
       templateSlug: data.templateSlug || null,
       music: data.music || null,
+      paymentQr: data.paymentQr || null,
+      albumUrl: data.albumUrl || null,
+      slug: event.slug || slugify(data.coupleName), // set once, keep stable
       totalGuests: data.totalGuests ?? undefined,
       ...albumForPlan(data.plan),
     },
@@ -232,5 +240,25 @@ export async function updateEvent(eventId, raw) {
 
   refreshAdmin();
   revalidatePath("/panel");
+  return { ok: true };
+}
+
+/* ---- Mesa de regalos gestionada desde el admin -------------------------- */
+export async function adminAddGift(eventId, name) {
+  await requireAdmin();
+  const clean = z.string().trim().min(1).max(120).parse(name);
+  const event = await prisma.event.findUnique({ where: { id: eventId }, select: { id: true } });
+  if (!event) return { ok: false, error: "Panel no encontrado." };
+  await prisma.gift.create({ data: { eventId, name: clean } });
+  refreshAdmin();
+  revalidatePath("/panel/regalos");
+  return { ok: true };
+}
+
+export async function adminRemoveGift(giftId) {
+  await requireAdmin();
+  await prisma.gift.delete({ where: { id: giftId } });
+  refreshAdmin();
+  revalidatePath("/panel/regalos");
   return { ok: true };
 }

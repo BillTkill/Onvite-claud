@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Icon from "./Icon";
 import { useI18n } from "./I18nProvider";
 import { TEMPLATES, getTemplate } from "@/lib/templates";
@@ -20,12 +21,20 @@ export default function BookForm() {
   const planParam = params.get("plan");
   const initialPlan = ["standard", "premium", "vip"].includes(planParam) ? planParam : "standard";
 
+  const { data: session } = useSession();
   const [plan, setPlan] = useState(initialPlan);
   const [template, setTemplate] = useState(preselected?.slug || TEMPLATES[0].slug);
   const [values, setValues] = useState({
     names: "", email: "", phone: "", eventType: "", date: "", place: "", notes: "",
   });
   const [submitting, setSubmitting] = useState(false);
+  const [alreadyBooked, setAlreadyBooked] = useState(false);
+
+  // Auto-fill the email with the logged-in account (avoids typos/mismatches).
+  const loggedIn = !!session?.user?.email;
+  useEffect(() => {
+    if (session?.user?.email) setValues((v) => ({ ...v, email: session.user.email }));
+  }, [session?.user?.email]);
 
   const set = (k) => (e) => setValues((v) => ({ ...v, [k]: e.target.value }));
   const planTexts = t("book.plans");
@@ -34,9 +43,10 @@ export default function BookForm() {
   async function onSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
+    setAlreadyBooked(false);
     const planName = (BOOK_PLAN_META.find((m) => m.id === plan) || BOOK_PLAN_META[0]).planName;
     try {
-      await fetch("/api/reservations", {
+      const res = await fetch("/api/reservations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -51,6 +61,12 @@ export default function BookForm() {
           notes: values.notes,
         }),
       });
+      if (res.status === 409) {
+        // The user already has a booking — one reservation per account.
+        setAlreadyBooked(true);
+        setSubmitting(false);
+        return;
+      }
     } catch {
       /* demo: proceed even if the request fails */
     }
@@ -117,7 +133,8 @@ export default function BookForm() {
             </div>
             <div>
               <label className="label" htmlFor="email">{t("book.email")}</label>
-              <input id="email" type="email" className="input" placeholder={t("book.emailPh")} value={values.email} onChange={set("email")} required />
+              <input id="email" type="email" className="input" placeholder={t("book.emailPh")} value={values.email} onChange={set("email")} required readOnly={loggedIn} style={loggedIn ? { background: "var(--brand50)", cursor: "not-allowed" } : undefined} />
+              {loggedIn && <p style={{ fontSize: 12, color: "var(--gold-deep)", marginTop: 4 }}>{t("book.emailAuto")}</p>}
             </div>
             <div>
               <label className="label" htmlFor="phone">{t("book.phone")}</label>
@@ -158,7 +175,12 @@ export default function BookForm() {
           </div>
 
           <div>
-            <button type="submit" className="btn btn-dark" disabled={submitting} style={{ padding: "13px 40px" }}>
+            {alreadyBooked && (
+              <p style={{ background: "#fef9c3", border: "1px solid #fde68a", color: "#a16207", borderRadius: 12, padding: "12px 16px", marginBottom: 14, fontSize: 14, fontWeight: 500 }}>
+                {t("book.alreadyBooked")}
+              </p>
+            )}
+            <button type="submit" className="btn btn-dark" disabled={submitting || alreadyBooked} style={{ padding: "13px 40px" }}>
               {submitting ? t("book.sending") : t("book.continue")} <Icon name="arrowRight" size={16} />
             </button>
             <p style={{ color: "var(--gold-deep)", marginTop: 12, fontSize: 14, fontWeight: 500 }}>{t("book.payNote")}</p>

@@ -33,7 +33,7 @@ export default function ProPanel({ view }) {
 
       <div style={{ marginTop: 16 }}><StatRow stats={view.stats} daysLeft={view.daysLeft} /></div>
       <div style={{ marginTop: 16 }}><AttendanceBar attending={view.attending} total={view.totalGuests} /></div>
-      <div style={{ marginTop: 16 }}><ShareCard inline couple={view.couple} /></div>
+      <div style={{ marginTop: 16 }}><ShareCard inline couple={view.couple} slug={view.slug} /></div>
 
       <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917", marginTop: 20 }}>{t("panel.pro.albumGifts")}</h2>
       <div className="p-half" style={{ marginTop: 14 }}>

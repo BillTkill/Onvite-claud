@@ -51,6 +51,8 @@ async function main() {
       albumPhotosPerGuest: 15,
       albumDays: 60,
       accessDurationDays: 90,
+      slug: "maria-carlos",
+      paymentQr: "https://onvite.com/pay/maria-carlos",
       active: true,
     },
   });

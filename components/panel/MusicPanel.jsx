@@ -4,15 +4,20 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import { useI18n } from "@/components/I18nProvider";
-import { setMusic, setMusicAutoplay } from "@/app/panel/actions";
+import { setMusic, setMusicAutoplay, setMusicFile } from "@/app/panel/actions";
 
-// Sample song choices (titles only — placeholder catalogue, like the mockup).
+// Repertoire — song titles only (our sample catalogue).
 const LIBRARY = [
   "Perfect — Ed Sheeran",
   "A Thousand Years — Christina Perri",
   "All of Me — John Legend",
   "Can't Help Falling in Love — Elvis Presley",
   "Marry Me — Train",
+  "Thinking Out Loud — Ed Sheeran",
+  "At Last — Etta James",
+  "Make You Feel My Love — Adele",
+  "Amazed — Lonestar",
+  "I Get to Love You — Ruelle",
 ];
 
 export default function MusicPanel({ view }) {
@@ -43,6 +48,25 @@ export default function MusicPanel({ view }) {
         await setMusicAutoplay(next);
       } catch {
         setAutoplay(!next);
+      }
+    });
+  }
+
+  // Pick an MP3 from the device: upload the file, then register it as the song.
+  function onPickMusic(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const songName = file.name.replace(/\.[^.]+$/, "");
+    setSelected(songName);
+    startTransition(async () => {
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        const up = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await up.json();
+        if (data.ok && data.url) await setMusicFile(data.url, songName);
+      } catch {
+        /* ignore */
       }
     });
   }
@@ -79,9 +103,13 @@ export default function MusicPanel({ view }) {
             <p style={{ fontWeight: 700, fontSize: 16, color: "#1c1917" }}>{selected}</p>
           </div>
         </div>
-        <span className="share-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <Icon name="play" size={14} /> {t("panel.music.preview")}
-        </span>
+        {view.musicUrl ? (
+          <audio controls src={view.musicUrl} style={{ height: 38, maxWidth: "100%" }} />
+        ) : (
+          <span className="share-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <Icon name="play" size={14} /> {t("panel.music.preview")}
+          </span>
+        )}
       </div>
 
       {/* Autoplay toggle */}
@@ -136,9 +164,11 @@ export default function MusicPanel({ view }) {
           })}
         </div>
         <div style={{ padding: "16px 20px", borderTop: "1px solid var(--brand100)" }}>
-          <span className="share-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <label className="share-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
             <Icon name="upload" size={15} /> {t("panel.music.uploadOwn")}
-          </span>
+            <input type="file" accept="audio/*,.mp3" onChange={onPickMusic} style={{ display: "none" }} />
+          </label>
+          <p style={{ fontSize: 12, color: "#9ca3af", marginTop: 8 }}>{t("panel.music.uploadHint")}</p>
         </div>
       </div>
 

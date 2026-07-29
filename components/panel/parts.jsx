@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import { useI18n } from "@/components/I18nProvider";
@@ -145,13 +145,15 @@ export function AttendanceBar({ attending, total }) {
   );
 }
 
-export function ShareCard({ inline, couple }) {
+export function ShareCard({ inline, couple, slug }) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
+  const [origin, setOrigin] = useState("https://onvite.com");
+  useEffect(() => { setOrigin(window.location.origin); }, []);
 
-  // Public invitation link (the couple's template invitation, not the panel).
-  const url = `https://onvite.com/i/${slugify(couple)}`;
+  // Public invitation link (the couple's real invitation page, not the panel).
+  const url = `${origin}/i/${slug || slugify(couple)}`;
   const waText = t("panel.share.waText", { couple: couple || "" });
   const waUrl = `https://wa.me/?text=${encodeURIComponent(`${waText} ${url}`)}`;
   // Real, scannable QR of the invitation link (free QR service, no API key).

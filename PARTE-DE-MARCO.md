@@ -219,3 +219,31 @@ Si no, fallará (hay tablas/campos nuevos: `Gift`, `SocialConnection`, `Event.mu
 4. **Redes**: conectar las APIs reales (necesita cuentas de desarrollador y claves).
 
 — Marco
+
+---
+
+# 1️⃣1️⃣ Tercera tanda — página de invitación, editor completo y subidas reales
+
+## ⚠️ Migraciones nuevas (correr tras `git pull`)
+```
+npm run db:migrate
+npm run db:seed
+```
+Se agregaron: `Photo` (fotos del álbum), y campos en `Event`: `musicUrl`, `paymentQr`, `albumUrl`, `albumModerate`, `slug`.
+
+## Novedades
+- **Página pública de la invitación** `/i/<slug>`: la invitación real que abren los invitados (diseño de la plantilla, fecha, mapa, subir fotos, RSVP). El "Compartir por WhatsApp/enlace/QR" del panel apunta aquí.
+- **Editor de Paneles (admin) ampliado**: subir **imagen del QR de pago**, gestionar **regalos** (añadir/eliminar), ver el **enlace público** de la invitación.
+- **Reserva**: auto-rellena el **email** del cliente logueado y bloquea **reservas duplicadas** (una por cuenta).
+- **Usuarios**: muestra el plan que el cliente **eligió** en su reserva; se puede asignar plan a cualquiera; columna **"Datos extra"** (nota del cliente).
+- **Accesos** por usuario, con **días restantes** y **auto-desactivación** a los 60/90 días.
+- **Subidas reales de archivos** (guardadas en `public/uploads/`, ignorado por git):
+  - Fotos/videos del **álbum** del invitado (`/album/subir?e=<slug>` → API `/api/upload` + `/api/album`), con **moderación** (aprobar/eliminar) y galería real en el panel y la invitación.
+  - **Música**: subir MP3 desde el dispositivo y reproducirlo.
+- **Menú admin** reordenado: Resumen · Ventas · Usuarios · Clientes · **Paneles · Accesos** · Consultas · Redes.
+
+## Pendiente (para producción)
+- Almacenamiento en la nube (S3/Cloudinary) en vez de disco local, si se despliega en Vercel.
+- Respaldo real en Google Drive para el álbum (hoy sin conectar).
+
+— Marco

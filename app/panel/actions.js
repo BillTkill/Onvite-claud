@@ -54,3 +54,36 @@ export async function setMusicAutoplay(enabled) {
   await prisma.event.update({ where: { id: event.id }, data: { musicAutoplay: Boolean(enabled) } });
   revalidatePath("/panel/musica");
 }
+
+/** Save an uploaded music file (already stored via /api/upload) as the song. */
+export async function setMusicFile(url, songName) {
+  const event = await requireOwnerEvent();
+  const cleanUrl = z.string().trim().min(1).max(300).parse(url);
+  const name = z.string().trim().min(1).max(200).parse(songName);
+  await prisma.event.update({ where: { id: event.id }, data: { musicUrl: cleanUrl, music: name } });
+  revalidatePath("/panel/musica");
+  revalidatePath("/panel");
+}
+
+/* ---- Álbum: moderación de fotos de invitados ---------------------------- */
+export async function setAlbumModerate(enabled) {
+  const event = await requireOwnerEvent();
+  await prisma.event.update({ where: { id: event.id }, data: { albumModerate: Boolean(enabled) } });
+  revalidatePath("/panel/album");
+}
+
+export async function approvePhoto(photoId) {
+  const event = await requireOwnerEvent();
+  const photo = await prisma.photo.findUnique({ where: { id: photoId }, select: { eventId: true } });
+  if (!photo || photo.eventId !== event.id) throw new Error("No autorizado");
+  await prisma.photo.update({ where: { id: photoId }, data: { approved: true } });
+  revalidatePath("/panel/album");
+}
+
+export async function deletePhoto(photoId) {
+  const event = await requireOwnerEvent();
+  const photo = await prisma.photo.findUnique({ where: { id: photoId }, select: { eventId: true } });
+  if (!photo || photo.eventId !== event.id) throw new Error("No autorizado");
+  await prisma.photo.delete({ where: { id: photoId } });
+  revalidatePath("/panel/album");
+}

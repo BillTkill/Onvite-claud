@@ -94,12 +94,31 @@ model Event {
   albumDays          Int?
   accessDurationDays Int?
   musicAutoplay      Boolean  @default(true)
+  musicUrl           String?  // uploaded background-music file (/uploads/…)
+  paymentQr          String?  // couple's payment link / QR data (rendered as a QR)
+  albumUrl           String?  // album link override (else auto from the couple slug)
+  albumModerate      Boolean  @default(false) // review guest photos before publishing
+  slug               String?  // public invitation URL slug (/i/<slug>)
   active             Boolean  @default(true)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
   guests             Guest[]
   gifts              Gift[]
+  photos             Photo[]
+}
+
+/// A photo/video uploaded by a guest to the couple's shared album.
+model Photo {
+  id           String   @id @default(cuid())
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId      String
+  url          String   // /uploads/<file>
+  uploaderName String?
+  approved     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  @@index([eventId])
 }
 
 /// A gift on the couple's registry. `reservedBy` is null while available.

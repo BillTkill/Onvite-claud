@@ -56,6 +56,7 @@ export default async function PanelPage() {
       totalGuests: event.totalGuests,
       albumPhotosPerGuest: event.albumPhotosPerGuest,
       albumDays: event.albumDays,
+      slug: event.slug,
       daysLeft: daysUntil(event.dateTime),
       stats,
       attending,

@@ -25,6 +25,17 @@ export async function POST(req) {
   const d = parsed.data;
   const session = await auth();
 
+  // One reservation per account: if the logged-in user (or their email) already
+  // has a booking, block a second one.
+  const emailNorm = d.email.trim().toLowerCase();
+  const existing = await prisma.reservation.findFirst({
+    where: { OR: [session?.user?.id ? { userId: session.user.id } : undefined, { email: emailNorm }].filter(Boolean) },
+    select: { id: true },
+  });
+  if (existing) {
+    return NextResponse.json({ ok: false, error: "exists" }, { status: 409 });
+  }
+
   const eventDate = d.date ? new Date(d.date) : null;
 
   await prisma.reservation.create({

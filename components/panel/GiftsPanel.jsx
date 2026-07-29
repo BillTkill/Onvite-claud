@@ -5,7 +5,7 @@ import Link from "next/link";
 import Icon from "@/components/Icon";
 import { StatCard } from "./parts";
 import { useI18n } from "@/components/I18nProvider";
-import { addGift } from "@/app/panel/actions";
+import { addGift, removeGift } from "@/app/panel/actions";
 
 export default function GiftsPanel({ view, gifts = [] }) {
   const { t } = useI18n();
@@ -15,10 +15,11 @@ export default function GiftsPanel({ view, gifts = [] }) {
   const [isPending, startTransition] = useTransition();
   const reserved = gifts.filter((g) => g.reservedBy).length;
   const available = gifts.length - reserved;
-  // Example payment QR (encodes a placeholder). In production the admin sets
-  // the couple's real QR from the panel editor.
-  const qrData = `Onvite · Aporte para ${view.couple || "la pareja"}`;
-  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(qrData)}`;
+  // If the admin uploaded the couple's real QR image (data URL), show it as-is;
+  // otherwise generate a QR from the payment data / an example placeholder.
+  const isImage = !!view.paymentQr && view.paymentQr.startsWith("data:");
+  const qrData = view.paymentQr || `Onvite · Aporte para ${view.couple || "la pareja"}`;
+  const qrSrc = isImage ? view.paymentQr : `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(qrData)}`;
 
   function submitGift() {
     const clean = name.trim();
@@ -31,6 +32,12 @@ export default function GiftsPanel({ view, gifts = [] }) {
       } catch {
         /* keep the input open on failure */
       }
+    });
+  }
+
+  function deleteGift(id) {
+    startTransition(async () => {
+      try { await removeGift(id); } catch { /* ignore */ }
     });
   }
 
@@ -143,15 +150,20 @@ export default function GiftsPanel({ view, gifts = [] }) {
                 <span style={{ color: "var(--gold-deep)" }}><Icon name="gift" size={18} /></span>
                 <p style={{ fontWeight: 600, color: "#1c1917" }}>{g.name}</p>
               </div>
-              {g.reservedBy ? (
-                <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600 }}>
-                  {t("panel.gifts.reservedBy", { name: g.reservedBy })}
-                </span>
-              ) : (
-                <span style={{ background: "var(--brand50)", color: "var(--brand700)", border: "1px solid var(--brand200)", borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600 }}>
-                  {t("panel.gifts.available")}
-                </span>
-              )}
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                {g.reservedBy ? (
+                  <span style={{ background: "#dcfce7", color: "#15803d", borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600 }}>
+                    {t("panel.gifts.reservedBy", { name: g.reservedBy })}
+                  </span>
+                ) : (
+                  <span style={{ background: "var(--brand50)", color: "var(--brand700)", border: "1px solid var(--brand200)", borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600 }}>
+                    {t("panel.gifts.available")}
+                  </span>
+                )}
+                {!g.reservedBy && (
+                  <button type="button" onClick={() => deleteGift(g.id)} disabled={isPending} title={t("panel.gifts.remove")} aria-label={t("panel.gifts.remove")} style={{ border: "none", background: "transparent", color: "#b91c1c", cursor: "pointer", fontWeight: 700, fontSize: 14 }}>✕</button>
+                )}
+              </div>
             </div>
           ))}
         </div>

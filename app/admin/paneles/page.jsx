@@ -13,9 +13,17 @@ export default async function AdminPanelesPage() {
   const { t } = await getServerT();
   const users = await prisma.user.findMany({
     where: { role: "CLIENT" },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "desc" }, // newest first
     include: { event: true },
   });
+
+  // Gifts for all existing events, grouped by event.
+  const eventIds = users.filter((u) => u.event).map((u) => u.event.id);
+  const gifts = eventIds.length
+    ? await prisma.gift.findMany({ where: { eventId: { in: eventIds } }, orderBy: { createdAt: "asc" }, select: { id: true, name: true, reservedBy: true, eventId: true } })
+    : [];
+  const giftsByEvent = {};
+  for (const g of gifts) (giftsByEvent[g.eventId] ||= []).push({ id: g.id, name: g.name, reservedBy: g.reservedBy });
 
   // Serialize to a plain, client-safe shape (Dates → strings).
   const items = users.map((u) => ({
@@ -35,8 +43,12 @@ export default async function AdminPanelesPage() {
           plan: u.event.plan,
           templateSlug: u.event.templateSlug || "",
           music: u.event.music || "",
+          paymentQr: u.event.paymentQr || "",
+          albumUrl: u.event.albumUrl || "",
+          slug: u.event.slug || "",
           totalGuests: u.event.totalGuests,
           active: u.event.active,
+          gifts: giftsByEvent[u.event.id] || [],
         }
       : null,
   }));

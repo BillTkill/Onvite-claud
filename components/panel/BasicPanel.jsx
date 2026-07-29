@@ -43,7 +43,7 @@ export default function BasicPanel({ view }) {
             <p style={{ fontSize: 13, color: "#9ca3af" }}>{t("panel.basic.totalOnly")}</p>
           </div>
         </div>
-        <ShareCard couple={view.couple} />
+        <ShareCard couple={view.couple} slug={view.slug} />
       </div>
 
       <div
