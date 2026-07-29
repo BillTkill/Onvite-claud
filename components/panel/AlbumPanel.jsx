@@ -43,7 +43,14 @@ export default function AlbumPanel({ view }) {
   // Placeholder counters (real uploads are a production task, like the mockup).
   const uploaders = view.guests.filter((g) => g.canUpload).length;
   const photos = uploaders * 6;
-  const albumLink = "onvite.com/a/maria-carlos";
+  // Album link derived from the real couple name (no hardcoded example).
+  const slug = (view.couple || "album")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "") // strip accents
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  const albumLink = `onvite.com/a/${slug || "album"}`;
 
   return (
     <>

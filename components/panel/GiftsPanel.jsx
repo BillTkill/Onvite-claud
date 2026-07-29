@@ -1,26 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import { StatCard } from "./parts";
 import { useI18n } from "@/components/I18nProvider";
+import { addGift } from "@/app/panel/actions";
 
-// Sample registry — placeholder data, like the album photos and the admin
-// "Redes" screen. Real persistence is a production task.
-const INITIAL_GIFTS = [
-  { id: "g1", name: "Juego de vajilla", reservedBy: "Ana Flores" },
-  { id: "g2", name: "Cafetera espresso", reservedBy: null },
-  { id: "g3", name: "Set de copas de cristal", reservedBy: "Familia Rojas" },
-  { id: "g4", name: "Mantelería de lino", reservedBy: null },
-  { id: "g5", name: "Robot de cocina", reservedBy: null },
-];
-
-export default function GiftsPanel({ view }) {
+export default function GiftsPanel({ view, gifts = [] }) {
   const { t } = useI18n();
-  const [gifts] = useState(INITIAL_GIFTS);
+  const [adding, setAdding] = useState(false);
+  const [name, setName] = useState("");
+  const [showQr, setShowQr] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const reserved = gifts.filter((g) => g.reservedBy).length;
   const available = gifts.length - reserved;
+  // Example payment QR (encodes a placeholder). In production the admin sets
+  // the couple's real QR from the panel editor.
+  const qrData = `Onvite · Aporte para ${view.couple || "la pareja"}`;
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(qrData)}`;
+
+  function submitGift() {
+    const clean = name.trim();
+    if (!clean) return;
+    startTransition(async () => {
+      try {
+        await addGift(clean); // revalidates the page → list refreshes
+        setName("");
+        setAdding(false);
+      } catch {
+        /* keep the input open on failure */
+      }
+    });
+  }
 
   return (
     <>
@@ -60,10 +72,18 @@ export default function GiftsPanel({ view }) {
             <p style={{ color: "#6b7280", marginTop: 2, fontSize: 13 }}>{t("panel.gifts.cashBody")}</p>
           </div>
         </div>
-        <span className="share-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <button type="button" onClick={() => setShowQr((v) => !v)} className="share-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer", background: "transparent" }}>
           <Icon name="qr" size={15} /> {t("panel.gifts.payQr")}
-        </span>
+        </button>
       </div>
+
+      {showQr && (
+        <div className="pcard" style={{ marginTop: 12, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={qrSrc} alt="QR" width={200} height={200} style={{ borderRadius: 12, border: "1px solid var(--brand100)" }} />
+          <p style={{ fontSize: 13, color: "#6b7280", textAlign: "center", maxWidth: 320 }}>{t("panel.gifts.qrCaption")}</p>
+        </div>
+      )}
 
       {/* Gift list */}
       <div className="pcard" style={{ marginTop: 16, padding: 0 }}>
@@ -74,11 +94,43 @@ export default function GiftsPanel({ view }) {
           }}
         >
           <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>{t("panel.gifts.listTitle")}</h2>
-          <span className="share-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px" }}>
+          <button
+            type="button"
+            onClick={() => setAdding((v) => !v)}
+            className="share-btn"
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 14px", border: "1px solid var(--brand200)", background: "transparent", cursor: "pointer" }}
+          >
             <Icon name="plus" size={15} /> {t("panel.gifts.add")}
-          </span>
+          </button>
         </div>
+
+        {adding && (
+          <div style={{ display: "flex", gap: 8, padding: "14px 20px", borderBottom: "1px solid var(--brand100)", flexWrap: "wrap" }}>
+            <input
+              autoFocus
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") submitGift(); }}
+              placeholder={t("panel.gifts.addPh")}
+              className="auth-field"
+              style={{ flex: 1, minWidth: 180 }}
+            />
+            <button
+              type="button"
+              onClick={submitGift}
+              disabled={isPending || !name.trim()}
+              className="share-btn share-btn--wa"
+              style={{ border: "none", cursor: isPending || !name.trim() ? "not-allowed" : "pointer", opacity: isPending || !name.trim() ? 0.6 : 1 }}
+            >
+              {isPending ? t("panel.gifts.saving") : t("panel.gifts.save")}
+            </button>
+          </div>
+        )}
+
         <div>
+          {gifts.length === 0 && !adding && (
+            <p style={{ padding: "24px 20px", textAlign: "center", color: "#9ca3af", fontSize: 13 }}>{t("panel.gifts.empty")}</p>
+          )}
           {gifts.map((g, i) => (
             <div
               key={g.id}

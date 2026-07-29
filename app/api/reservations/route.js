@@ -11,6 +11,7 @@ const schema = z.object({
   phone: z.string().optional(),
   eventType: z.string().trim().min(1),
   date: z.string().optional(),
+  city: z.string().optional(),
   place: z.string().optional(),
   notes: z.string().optional(),
 });
@@ -34,6 +35,10 @@ export async function POST(req) {
       phone: d.phone || null,
       eventType: d.eventType,
       eventDate: eventDate && !isNaN(eventDate.getTime()) ? eventDate : null,
+      // The public form has a single location field ("Lugar", placeholder
+      // "Ciudad, país"). Persist it as `city` too so the admin CRM — which
+      // reads `city` — shows the location instead of an empty cell.
+      city: d.city || d.place || null,
       place: d.place || null,
       notes: d.notes || null,
       plan: d.plan || null,

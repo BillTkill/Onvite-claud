@@ -1,9 +1,11 @@
+"use client";
+
 /**
  * Admin charts — static SVGs reproduced from the mockup.
  * Sample data; a real build would feed these from the analytics API.
  */
+import { useI18n } from "@/components/I18nProvider";
 
-const MONTHS = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 const X = [44, 97.1, 150.2, 203.3, 256.4, 309.5, 362.5, 415.6, 468.7, 521.8, 574.9, 628];
 
 function GridLines({ labels }) {
@@ -21,20 +23,23 @@ function GridLines({ labels }) {
 }
 
 function MonthLabels({ every = 1 }) {
-  return MONTHS.map((m, i) =>
+  const { t } = useI18n();
+  const months = t("admin.charts.months");
+  return (Array.isArray(months) ? months : []).map((m, i) =>
     i % every === 0 ? (
-      <text key={m} x={X[i]} y="212" fontSize="10" fill="#9ca3af" textAnchor="middle">{m}</text>
+      <text key={i} x={X[i]} y="212" fontSize="10" fill="#9ca3af" textAnchor="middle">{m}</text>
     ) : null
   );
 }
 
 export function MonthlyChart() {
+  const { t } = useI18n();
   const pts2026 = "44,139.6 97.1,124.8 150.2,103.7 203.3,79.7 256.4,49.1 309.5,12 362.5,111.6 415.6,194 468.7,194 521.8,194 574.9,194 628,194";
   const pts2025 = "44,151.4 97.1,143.6 150.2,134.3 203.3,124.8 256.4,113 309.5,117 362.5,109 415.6,102.3 468.7,98.3 521.8,93 574.9,86.4 628,67.9";
   const dots = [[44, 139.6], [97.1, 124.8], [150.2, 103.7], [203.3, 79.7], [256.4, 49.1], [309.5, 12], [362.5, 111.6]];
   return (
     <div className="admin-card">
-      <h2 className="serif admin-card__title">Evolución mensual (Bs)</h2>
+      <h2 className="serif admin-card__title">{t("admin.charts.monthly")}</h2>
       <svg viewBox="0 0 640 220" style={{ width: "100%" }}>
         <GridLines labels={["13700", "10275", "6850", "3425", "0"]} />
         <polyline fill="none" stroke="#c4b5fd" strokeWidth="2.5" strokeDasharray="5 4" points={pts2025} />
@@ -55,11 +60,12 @@ export function MonthlyChart() {
 }
 
 export function CumulativeChart() {
+  const { t } = useI18n();
   const pts = "44,178.9 97.1,159.8 150.2,134.8 203.3,103.2 256.4,63.1 309.5,12 362.5,12 415.6,12 468.7,12 521.8,12 574.9,12 628,12";
   const dots = [[44, 178.9], [97.1, 159.8], [150.2, 134.8], [203.3, 103.2], [256.4, 63.1], [309.5, 12]];
   return (
     <div className="admin-card">
-      <h2 className="serif admin-card__title">Acumulado del año (Bs)</h2>
+      <h2 className="serif admin-card__title">{t("admin.charts.cumulative")}</h2>
       <svg viewBox="0 0 640 220" style={{ width: "100%" }}>
         <GridLines labels={["49500", "37125", "24750", "12375", "0"]} />
         <polyline fill="none" stroke="#16a34a" strokeWidth="2.5" points={pts} />
@@ -71,6 +77,8 @@ export function CumulativeChart() {
 }
 
 export function RevenueBars() {
+  const { t } = useI18n();
+  const months = t("admin.charts.months");
   const bars = [
     [59.7, 139.6, 54.4], [109.4, 124.9, 69.1], [159.1, 103.7, 90.3], [208.8, 79.7, 114.3],
     [258.5, 49.2, 144.8], [308.2, 12, 182], [357.9, 111.6, 82.4],
@@ -78,14 +86,14 @@ export function RevenueBars() {
   const barLabelX = [74.6, 124.3, 174, 223.7, 273.4, 323.1, 372.8, 422.5, 472.2, 521.9, 571.6, 621.3];
   return (
     <div className="admin-card">
-      <h2 className="serif admin-card__title">Ingresos por mes (Bs)</h2>
+      <h2 className="serif admin-card__title">{t("admin.charts.revenue")}</h2>
       <svg viewBox="0 0 640 220" style={{ width: "100%" }}>
         <GridLines labels={["13700", "10275", "6850", "3425", "0"]} />
         {bars.map(([x, y, h], i) => (
           <rect key={x} x={x} y={y} width="29.8" height={h} rx="4" fill="#ec4899" />
         ))}
-        {MONTHS.map((m, i) => (
-          <text key={m} x={barLabelX[i]} y="212" fontSize="10" fill="#9ca3af" textAnchor="middle">{m}</text>
+        {(Array.isArray(months) ? months : []).map((m, i) => (
+          <text key={i} x={barLabelX[i]} y="212" fontSize="10" fill="#9ca3af" textAnchor="middle">{m}</text>
         ))}
       </svg>
     </div>

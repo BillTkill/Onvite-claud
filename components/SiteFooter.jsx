@@ -24,9 +24,14 @@ export default function SiteFooter() {
             WhatsApp
           </a>
         </div>
-        <Link href="/terminos" className="site-footer__terms">
-          {t("footer.terms")}
-        </Link>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
+          <Link href="/terminos" className="site-footer__terms">
+            {t("footer.terms")}
+          </Link>
+          <Link href="/privacidad" className="site-footer__terms">
+            {t("footer.privacy")}
+          </Link>
+        </div>
         <p style={{ color: "var(--ink-soft)", fontSize: 12 }}>{t("footer.rights")}</p>
       </div>
     </footer>

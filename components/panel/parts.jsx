@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import { useI18n } from "@/components/I18nProvider";
+import { setGuestUpload } from "@/app/panel/actions";
+import { slugify } from "@/lib/format";
 
 const STATUS_STYLE = {
   confirmado: { bg: "#dcfce7", fg: "#15803d" },
@@ -14,10 +16,22 @@ const STATUS_STYLE = {
 export function PanelHero({ title, dateLabel, venue }) {
   const { t } = useI18n();
   return (
-    <div>
-      <p style={{ fontSize: 14, color: "var(--brand600)" }}>{t("panel.eventPanel")}</p>
-      <h1 className="serif" style={{ fontSize: "clamp(24px,4vw,30px)", fontWeight: 700, color: "#1c1917" }}>{title}</h1>
-      <p style={{ color: "#4b5563", marginTop: 4, fontSize: 15 }}>{dateLabel} · {venue}</p>
+    <div
+      style={{
+        position: "relative", overflow: "hidden", borderRadius: 20, padding: "30px 30px",
+        background: "linear-gradient(135deg,#fbf3e3 0%,#f6e8cf 45%,#efdcc0 100%)",
+        border: "1px solid var(--brand100)", boxShadow: "0 6px 24px rgba(28,25,23,.07)",
+      }}
+    >
+      <div aria-hidden="true" style={{ position: "absolute", right: -40, top: -40, width: 180, height: 180, borderRadius: "50%", background: "radial-gradient(circle,rgba(180,137,74,.16),transparent 70%)" }} />
+      <div aria-hidden="true" style={{ position: "absolute", right: 22, bottom: 18, color: "rgba(180,137,74,.35)" }}><Icon name="sparkle" size={26} /></div>
+      <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase", color: "var(--brand600)" }}>{t("panel.eventPanel")}</p>
+      <h1 className="serif" style={{ fontSize: "clamp(26px,5vw,36px)", fontWeight: 700, color: "#1c1917", marginTop: 6, letterSpacing: "-.01em" }}>{title}</h1>
+      <p style={{ color: "#57534e", marginTop: 8, fontSize: 15, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><Icon name="calendarCheck" size={15} /> {dateLabel}</span>
+        <span style={{ color: "var(--brand300)" }}>·</span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><Icon name="mapPin" size={15} /> {venue}</span>
+      </p>
     </div>
   );
 }
@@ -29,9 +43,10 @@ export function DesignCard({ couple, label, designName, gradient, lines }) {
       <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: ".05em", textTransform: "uppercase", color: "var(--brand600)", marginBottom: 8 }}>
         {label}{designName ? `: ${designName}` : ""}
       </p>
-      <div style={{ borderRadius: 12, padding: 24, textAlign: "center", background: gradient }}>
-        <p className="serif" style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".2em", color: "#292524" }}>{t("panel.weGetMarried")}</p>
-        <p className="serif" style={{ marginTop: 8, fontSize: 24, color: "#1c1917" }}>{couple}</p>
+      <div style={{ borderRadius: 14, padding: "30px 24px", textAlign: "center", background: gradient, boxShadow: "inset 0 0 0 1px rgba(255,255,255,.45), 0 12px 30px rgba(28,25,23,.14)", position: "relative" }}>
+        <span aria-hidden="true" style={{ position: "absolute", inset: 8, border: "1px solid rgba(255,255,255,.35)", borderRadius: 10, pointerEvents: "none" }} />
+        <p className="serif" style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: ".22em", color: "#292524" }}>{t("panel.weGetMarried")}</p>
+        <p className="serif" style={{ marginTop: 8, fontSize: 26, color: "#1c1917" }}>{couple}</p>
         <div style={{ margin: "12px auto", height: 1, width: 64, background: "rgba(41,37,36,.3)" }} />
         {(lines || []).map((l) => (
           <p key={l} style={{ fontSize: 12, color: "#292524" }}>{l}</p>
@@ -44,8 +59,13 @@ export function DesignCard({ couple, label, designName, gradient, lines }) {
   );
 }
 
-export function EventDetails({ rows }) {
+export function EventDetails({ rows, mapQuery }) {
   const { t } = useI18n();
+  const mapUrl = mapQuery ? `https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}` : null;
+  const pillStyle = {
+    display: "inline-flex", alignItems: "center", gap: 6, marginTop: 16, border: "1px solid var(--brand300)",
+    borderRadius: 999, padding: "8px 16px", fontSize: 14, fontWeight: 600, color: "var(--brand700)",
+  };
   return (
     <div className="pcard">
       <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>{t("panel.eventDetails")}</h2>
@@ -57,23 +77,37 @@ export function EventDetails({ rows }) {
           </div>
         ))}
       </div>
-      <span
-        style={{
-          display: "inline-flex", alignItems: "center", gap: 6, marginTop: 16, border: "1px solid var(--brand300)",
-          borderRadius: 999, padding: "8px 16px", fontSize: 14, fontWeight: 600, color: "var(--brand700)",
-        }}
-      >
-        <Icon name="mapPin" size={15} /> {t("panel.viewOnMap")}
-      </span>
+      {mapUrl ? (
+        <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={pillStyle}>
+          <Icon name="mapPin" size={15} /> {t("panel.viewOnMap")}
+        </a>
+      ) : (
+        <span style={pillStyle}><Icon name="mapPin" size={15} /> {t("panel.viewOnMap")}</span>
+      )}
+      {mapQuery && (
+        <iframe
+          title="map"
+          width="100%"
+          height="200"
+          style={{ border: 0, borderRadius: 12, marginTop: 12 }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          src={`https://www.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`}
+        />
+      )}
     </div>
   );
 }
 
 export function StatCard({ label, value, color, compact }) {
   return (
-    <div className="pcard" style={{ padding: compact ? 16 : 20 }}>
-      <p style={{ fontSize: compact ? 13 : 14, color: "#6b7280" }}>{label}</p>
-      <p className="serif" style={{ marginTop: compact ? 2 : 4, fontSize: compact ? 24 : 28, fontWeight: 700, color }}>{value}</p>
+    <div className="pcard" style={{ padding: compact ? 16 : 20, position: "relative", overflow: "hidden" }}>
+      <span aria-hidden="true" style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: color, opacity: 0.9 }} />
+      <p style={{ fontSize: compact ? 13 : 14, color: "#6b7280", display: "flex", alignItems: "center", gap: 6 }}>
+        <span aria-hidden="true" style={{ width: 7, height: 7, borderRadius: "50%", background: color, display: "inline-block" }} />
+        {label}
+      </p>
+      <p className="serif" style={{ marginTop: compact ? 2 : 6, fontSize: compact ? 26 : 32, fontWeight: 700, color, letterSpacing: "-.02em" }}>{value}</p>
     </div>
   );
 }
@@ -105,21 +139,63 @@ export function AttendanceBar({ attending, total }) {
         <span style={{ fontSize: 22, fontWeight: 700, color: "var(--brand600)" }}>{percent}%</span>
       </div>
       <div style={{ marginTop: 12, height: 12, width: "100%", borderRadius: 999, background: "var(--brand100)", overflow: "hidden" }}>
-        <div style={{ height: "100%", width: `${percent}%`, borderRadius: 999, background: "var(--brand500)" }} />
+        <div style={{ height: "100%", width: `${percent}%`, borderRadius: 999, background: "linear-gradient(90deg, var(--brand600), var(--gold))", boxShadow: "0 1px 6px rgba(180,137,74,.4)", transition: "width .4s ease" }} />
       </div>
     </div>
   );
 }
 
-export function ShareCard({ inline }) {
+export function ShareCard({ inline, couple }) {
   const { t } = useI18n();
+  const [copied, setCopied] = useState(false);
+  const [showQr, setShowQr] = useState(false);
+
+  // Public invitation link (the couple's template invitation, not the panel).
+  const url = `https://onvite.com/i/${slugify(couple)}`;
+  const waText = t("panel.share.waText", { couple: couple || "" });
+  const waUrl = `https://wa.me/?text=${encodeURIComponent(`${waText} ${url}`)}`;
+  // Real, scannable QR of the invitation link (free QR service, no API key).
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=${encodeURIComponent(url)}`;
+
+  function copy() {
+    try {
+      navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* ignore */
+    }
+  }
+
   const buttons = (
     <>
-      <span className="share-btn share-btn--wa">{t("panel.share.whatsapp")}</span>
-      <span className="share-btn">{t("panel.share.copy")}</span>
-      <span className="share-btn">{t("panel.share.qr")}</span>
+      <a href={waUrl} target="_blank" rel="noopener noreferrer" className="share-btn share-btn--wa" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+        <Icon name="share" size={14} /> {t("panel.share.whatsapp")}
+      </a>
+      <button type="button" onClick={copy} className="share-btn" style={{ cursor: "pointer", background: "transparent" }}>
+        {copied ? t("panel.share.copied") : t("panel.share.copy")}
+      </button>
+      <button type="button" onClick={() => setShowQr((v) => !v)} className="share-btn" style={{ cursor: "pointer", background: "transparent" }}>
+        {t("panel.share.qr")}
+      </button>
     </>
   );
+
+  const linkRow = (
+    <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 8, border: "1px solid var(--brand100)", borderRadius: 12, padding: "8px 12px", background: "var(--brand50)" }}>
+      <Icon name="link" size={14} />
+      <span style={{ fontSize: 13, color: "#1c1917", fontWeight: 600, wordBreak: "break-all" }}>{url}</span>
+    </div>
+  );
+
+  const qrBlock = showQr && (
+    <div style={{ marginTop: 14, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={qrSrc} alt="QR" width={180} height={180} style={{ borderRadius: 12, border: "1px solid var(--brand100)" }} />
+      <p style={{ fontSize: 12, color: "#9ca3af" }}>{t("panel.share.qrCaption")}</p>
+    </div>
+  );
+
   if (inline) {
     return (
       <div className="pcard">
@@ -130,13 +206,17 @@ export function ShareCard({ inline }) {
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>{buttons}</div>
         </div>
+        {linkRow}
+        {qrBlock}
       </div>
     );
   }
   return (
     <div className="pcard" style={{ padding: 24 }}>
       <h2 className="serif" style={{ fontSize: 16, fontWeight: 700, color: "#1c1917" }}>{t("panel.share.title")}</h2>
+      {linkRow}
       <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 12 }}>{buttons}</div>
+      {qrBlock}
     </div>
   );
 }
@@ -145,8 +225,22 @@ export function UploadPermissions({ guests }) {
   const { t } = useI18n();
   const eligible = guests.filter((g) => g.status !== "rechazado");
   const [mode, setMode] = useState("activados"); // "todos" | "activados"
-  const [perms, setPerms] = useState(() => Object.fromEntries(eligible.map((g) => [g.name, g.canUpload])));
+  const [perms, setPerms] = useState(() => Object.fromEntries(eligible.map((g) => [g.id, g.canUpload])));
+  const [isPending, startTransition] = useTransition();
   const count = Object.values(perms).filter(Boolean).length;
+
+  // Persist a single guest's permission (optimistic; reverts on failure).
+  function toggleGuest(id) {
+    const next = !perms[id];
+    setPerms((p) => ({ ...p, [id]: next }));
+    startTransition(async () => {
+      try {
+        await setGuestUpload(id, next);
+      } catch {
+        setPerms((p) => ({ ...p, [id]: !next })); // revert
+      }
+    });
+  }
 
   return (
     <div className="pcard" style={{ borderRadius: 20, padding: 24, boxShadow: "0 6px 20px rgba(28,25,23,.06)" }}>
@@ -177,13 +271,13 @@ export function UploadPermissions({ guests }) {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }} className="perm-grid">
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12, opacity: isPending ? 0.7 : 1, transition: "opacity .15s ease" }} className="perm-grid">
         {eligible.map((g) => {
-          const on = mode === "todos" ? true : perms[g.name];
+          const on = mode === "todos" ? true : perms[g.id];
           const disabled = mode === "todos";
           return (
             <div
-              key={g.name}
+              key={g.id}
               style={{
                 display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,
                 border: "1px solid var(--brand100)", borderRadius: 12, padding: "11px 14px",
@@ -200,7 +294,7 @@ export function UploadPermissions({ guests }) {
                 aria-label={t("panel.upload.allow", { name: g.name })}
                 disabled={disabled}
                 style={{ opacity: disabled ? 0.6 : 1, cursor: disabled ? "not-allowed" : "pointer" }}
-                onClick={() => setPerms((p) => ({ ...p, [g.name]: !p[g.name] }))}
+                onClick={() => toggleGuest(g.id)}
               >
                 <span />
               </button>

@@ -164,4 +164,58 @@ Cuando cada uno termine su parte, dejar un archivo de parte como este (por ejemp
 
 Cualquier duda con lo que hice, está todo comentado en el código.
 
+---
+
+# 🔟 Segunda sesión (28–29/07/2026) — mejoras grandes
+
+Después de la primera entrega seguimos trabajando bastante. Resumen de lo nuevo:
+
+## ⚠️ IMPORTANTE al actualizar (léelo primero)
+Hay **3 migraciones nuevas** de Prisma. Después de `git pull` corre **sí o sí**:
+```
+npm run db:migrate
+npm run db:seed
+```
+Si no, fallará (hay tablas/campos nuevos: `Gift`, `SocialConnection`, `Event.musicAutoplay`).
+
+## Cuentas de prueba nuevas (contraseña `Test123!`)
+| Plan | Correo |
+|---|---|
+| Estándar | `basico@test.com` |
+| Premium | `premium@test.com` |
+| Premium VIP | `vip@test.com` |
+> Ahora **todos** los usuarios cliente aparecen de forma coherente en Usuarios, Clientes y Accesos (base de datos unificada). Solo hay **3 planes**: Estándar / Premium / Premium VIP.
+
+## Correcciones y arreglos
+- **Bug ciudad** en `/api/reservations` (el CRM ya la muestra).
+- **Planes unificados** a 3 (antes había Normal/Pro/VIP/Premium Plus mezclados).
+- **Permisos del álbum, mesa de regalos y música** ahora **persisten** en la base de datos.
+- Quitamos textos fijos y el duplicado de "Quién puede subir al álbum" (queda solo en `/panel/album`).
+
+## Admin
+- **Traducido a 4 idiomas** (ES/EN/FR/IT) usando una **cookie de idioma** para el servidor (`lib/i18n/server.js`).
+- **Nueva sección "Paneles"** (`/admin/paneles`): editar el evento del usuario (fecha, hora, lugar, dirección + **mapa Google gratis**, código de vestimenta, plan, plantilla, música) y **"Crear panel"** para usuarios sin panel.
+- **Accesos** es ahora **por usuario** (no por reserva): selector de plan y de plantilla, **"Editar"** para cambiar el plan de un panel activo, mensaje verde **"Se le dio acceso a [nombre] (correo)"**, y **"días restantes"** con **auto-desactivación** a los 60/90 días (el panel se bloquea solo; el aviso al cliente se hace manual por WhatsApp/correo).
+- **Usuarios**: cambiar plan a **cualquier** usuario, columna **"Datos extra"** (verde/rojo con la nota del cliente), orden **más reciente arriba**.
+- **Clientes**: estados con **color** (rojo/azul/verde).
+- **Redes**: botones **Conectar/Conectado** que persisten (modelo `SocialConnection`); claves en `.env.example` y guía en `docs/redes-integraciones.md` (OAuth real necesita cuentas/keys de cada plataforma).
+
+## Panel del cliente
+- **Rediseño visual glamuroso**: fondo con degradado, barra superior tipo cristal, tarjetas con sombras premium, banner dorado, estadísticas con acento de color, barra de asistencia con degradado.
+- **Compartir invitación**: WhatsApp / copiar enlace / **QR real** (servicio gratuito). El "Pagar por QR" de regalos muestra un QR de ejemplo.
+- **Ver ubicación en el mapa**: mapa de Google incrustado (gratis, sin API key).
+- Panel bloqueado: los 3 planes llevan a **solicitar** (`/book`).
+
+## Legal
+- **Términos** ampliados a 18 secciones y nueva **Política de privacidad** (`/privacidad`), en español neutral.
+
+## Español neutral
+- Toda la web pasó de español de España ("contadnos/vuestra") a **español neutral** ("cuéntennos/su").
+
+## Pendiente para próximos pases (lo hablado con el cliente)
+1. **QR de pago real configurable por el admin** (hoy es de ejemplo).
+2. **Agregar regalos y enlace del álbum desde el admin** (hoy los regalos se agregan desde el panel de la pareja).
+3. **Página pública real de la invitación** (con fotos/videos) — hoy el enlace/QR/WhatsApp apuntan a un enlace de ejemplo (`onvite.com/i/...`).
+4. **Redes**: conectar las APIs reales (necesita cuentas de desarrollador y claves).
+
 — Marco

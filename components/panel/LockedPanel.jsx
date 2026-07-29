@@ -6,10 +6,12 @@ import { useI18n } from "@/components/I18nProvider";
 
 export default function LockedPanel() {
   const { t } = useI18n();
+  // Prices and names kept in sync with the public pricing section (100/165/200).
+  // Each chip links to the booking page with that plan preselected.
   const chips = [
-    { name: t("panel.locked.normal"), price: "$18", highlight: false },
-    { name: t("panel.locked.pro"), price: "$35", highlight: true },
-    { name: t("panel.locked.vip"), price: "$55", highlight: false },
+    { name: t("panel.locked.normal"), price: "$100", highlight: false, plan: "standard" },
+    { name: t("panel.locked.pro"), price: "$165", highlight: true, plan: "premium" },
+    { name: t("panel.locked.vip"), price: "$200", highlight: false, plan: "vip" },
   ];
 
   return (
@@ -51,10 +53,11 @@ export default function LockedPanel() {
           <p style={{ color: "var(--ink-soft)", marginTop: 12, fontSize: 14, lineHeight: 1.6 }}>{t("panel.locked.body")}</p>
           <div style={{ display: "flex", gap: 8, marginTop: 20 }}>
             {chips.map((c) => (
-              <div
+              <Link
                 key={c.name}
+                href={`/book?plan=${c.plan}`}
                 style={{
-                  flex: 1,
+                  flex: 1, display: "block", textAlign: "center", cursor: "pointer",
                   border: c.highlight ? "1px solid var(--gold)" : "1px solid var(--border)",
                   background: c.highlight ? "rgba(240,230,212,.4)" : "transparent",
                   borderRadius: 12, padding: "12px 8px",
@@ -62,7 +65,7 @@ export default function LockedPanel() {
               >
                 <p style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)" }}>{c.name}</p>
                 <p style={{ fontSize: 12, color: "var(--gold-deep)", fontWeight: 600 }}>{c.price}</p>
-              </div>
+              </Link>
             ))}
           </div>
           <Link href="/#precios" className="btn btn-dark btn-block" style={{ marginTop: 20, padding: 13, fontWeight: 600 }}>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import Icon from "@/components/Icon";
 import { useI18n } from "@/components/I18nProvider";
+import { setMusic, setMusicAutoplay } from "@/app/panel/actions";
 
 // Sample song choices (titles only — placeholder catalogue, like the mockup).
 const LIBRARY = [
@@ -18,7 +19,33 @@ export default function MusicPanel({ view }) {
   const { t } = useI18n();
   const current = view.music || LIBRARY[0];
   const [selected, setSelected] = useState(current);
-  const [autoplay, setAutoplay] = useState(true);
+  const [autoplay, setAutoplay] = useState(view.musicAutoplay ?? true);
+  const [, startTransition] = useTransition();
+
+  // Persist the chosen song (optimistic; reverts on failure).
+  function chooseSong(song) {
+    const prev = selected;
+    setSelected(song);
+    startTransition(async () => {
+      try {
+        await setMusic(song);
+      } catch {
+        setSelected(prev);
+      }
+    });
+  }
+
+  function toggleAutoplay() {
+    const next = !autoplay;
+    setAutoplay(next);
+    startTransition(async () => {
+      try {
+        await setMusicAutoplay(next);
+      } catch {
+        setAutoplay(!next);
+      }
+    });
+  }
 
   return (
     <>
@@ -71,7 +98,7 @@ export default function MusicPanel({ view }) {
           data-on={autoplay}
           aria-pressed={autoplay}
           aria-label={t("panel.music.autoplayTitle")}
-          onClick={() => setAutoplay((v) => !v)}
+          onClick={toggleAutoplay}
         >
           <span />
         </button>
@@ -88,7 +115,7 @@ export default function MusicPanel({ view }) {
             return (
               <button
                 key={song}
-                onClick={() => setSelected(song)}
+                onClick={() => chooseSong(song)}
                 style={{
                   width: "100%", textAlign: "left", background: on ? "var(--brand50)" : "transparent", border: "none", cursor: "pointer",
                   display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12,

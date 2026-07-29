@@ -1,6 +1,6 @@
 "use client";
 
-import { PanelHero, DesignCard, StatCard, AttendanceBar, UploadPermissions, GuestList, ExtraCard } from "./parts";
+import { PanelHero, DesignCard, StatCard, AttendanceBar, GuestList, ExtraCard } from "./parts";
 import { useI18n } from "@/components/I18nProvider";
 import { formatDate, formatTime } from "@/lib/format";
 
@@ -40,7 +40,6 @@ export default function VipPanel({ view }) {
         <ExtraCard icon="shield" title={t("panel.vip.supportTitle")} body={t("panel.vip.supportBody")} meta={t("panel.vip.supportMeta")} cta={t("panel.vip.supportCta")} ctaWhatsapp />
       </div>
 
-      <div style={{ marginTop: 16 }}><UploadPermissions guests={view.guests} /></div>
       <div style={{ marginTop: 16 }}><GuestList guests={view.guests} withFilter={false} /></div>
 
       <p style={{ textAlign: "center", color: "#9ca3af", marginTop: 20, fontSize: 12 }}>{t("panel.vip.note")}</p>

@@ -31,6 +31,10 @@ export function I18nProvider({ children }) {
       if (saved && LOCALE_CODES.includes(saved) && saved !== DEFAULT_LOCALE) {
         setLocaleState(saved);
       }
+      // Keep the cookie in sync so server components (admin) read the same locale.
+      if (saved && LOCALE_CODES.includes(saved)) {
+        document.cookie = `${STORAGE_LOCALE}=${saved}; path=/; max-age=31536000; samesite=lax`;
+      }
     } catch {
       /* ignore */
     }
@@ -45,6 +49,8 @@ export function I18nProvider({ children }) {
     setLocaleState(next);
     try {
       localStorage.setItem(STORAGE_LOCALE, next);
+      // Mirror to a cookie so server components render in the same language.
+      document.cookie = `${STORAGE_LOCALE}=${next}; path=/; max-age=31536000; samesite=lax`;
     } catch {
       /* ignore */
     }

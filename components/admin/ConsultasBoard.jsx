@@ -4,11 +4,13 @@ import { useState, useTransition } from "react";
 import { AdminTitle } from "@/components/admin/AdminShell";
 import { markConsultaAttended } from "@/app/admin/actions";
 import { CHANNEL_LABEL, CHANNEL_BADGE } from "@/lib/admin-display";
+import { useI18n } from "@/components/I18nProvider";
 
 const CONNECT = ["WhatsApp", "Instagram", "Telegram", "Correo", "Facebook Messenger"];
 const FILTERS = ["Todos", "WHATSAPP", "CORREO", "TELEGRAM", "INSTAGRAM"];
 
 export default function ConsultasBoard({ items }) {
+  const { t } = useI18n();
   const [filter, setFilter] = useState("Todos");
   const [pending, start] = useTransition();
 
@@ -18,21 +20,21 @@ export default function ConsultasBoard({ items }) {
   return (
     <>
       <AdminTitle
-        title="Consultas"
-        subtitle="WhatsApp, Correo, Telegram e Instagram en un solo lugar"
+        title={t("admin.consultas.title")}
+        subtitle={t("admin.consultas.subtitle")}
         action={
           <span style={{ background: "#fee2e2", color: "#dc2626", borderRadius: 999, padding: "4px 10px", fontSize: 12, fontWeight: 600 }}>
-            {pendingCount} sin atender
+            {t("admin.consultas.pending", { n: pendingCount })}
           </span>
         }
       />
 
       <div className="admin-card" style={{ marginBottom: 24 }}>
-        <h2 className="serif admin-card__title" style={{ marginBottom: 8 }}>Conectar tus canales</h2>
-        <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 12 }}>Conecta tus cuentas para que los mensajes lleguen aquí automáticamente.</p>
+        <h2 className="serif admin-card__title" style={{ marginBottom: 8 }}>{t("admin.consultas.connectTitle")}</h2>
+        <p style={{ fontSize: 14, color: "#6b7280", marginBottom: 12 }}>{t("admin.consultas.connectBody")}</p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {CONNECT.map((c) => (
-            <span key={c} className="connect-pill">+ Conectar {c}</span>
+            <span key={c} className="connect-pill">+ {t("admin.consultas.connect")} {c}</span>
           ))}
         </div>
       </div>
@@ -40,7 +42,7 @@ export default function ConsultasBoard({ items }) {
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
         {FILTERS.map((f) => (
           <button key={f} className={`filter-pill ${filter === f ? "filter-pill--active" : ""}`} onClick={() => setFilter(f)}>
-            {f === "Todos" ? "Todos" : CHANNEL_LABEL[f]}
+            {f === "Todos" ? t("admin.consultas.all") : CHANNEL_LABEL[f]}
           </button>
         ))}
       </div>
@@ -57,23 +59,23 @@ export default function ConsultasBoard({ items }) {
             <p style={{ marginTop: 8, fontWeight: 600, color: "#1c1917" }}>{m.from}</p>
             <p style={{ fontSize: 14, color: "#6b7280" }}>{m.text}</p>
             {m.done ? (
-              <p style={{ marginTop: 12, fontSize: 12, fontWeight: 600, color: "#16a34a" }}>✓ Atendido</p>
+              <p style={{ marginTop: 12, fontSize: 12, fontWeight: 600, color: "#16a34a" }}>{t("admin.consultas.attended")}</p>
             ) : (
               <button
                 disabled={pending}
                 onClick={() => start(() => markConsultaAttended(m.id))}
                 style={{ marginTop: 12, background: "var(--brand600)", color: "#fff", border: "none", borderRadius: 999, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
               >
-                Marcar atendido
+                {t("admin.consultas.markAttended")}
               </button>
             )}
           </div>
         ))}
-        {visible.length === 0 && <p style={{ color: "#9ca3af", fontSize: 14 }}>Sin consultas en este canal.</p>}
+        {visible.length === 0 && <p style={{ color: "#9ca3af", fontSize: 14 }}>{t("admin.consultas.empty")}</p>}
       </div>
 
       <p style={{ marginTop: 24, fontSize: 12, color: "#9ca3af" }}>
-        Consultas reales de tu base de datos. En Fase 2 llegan automáticamente desde las APIs de WhatsApp Business, Telegram, Instagram y el correo.
+        {t("admin.consultas.note")}
       </p>
     </>
   );

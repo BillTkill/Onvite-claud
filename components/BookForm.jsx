@@ -7,8 +7,9 @@ import { useI18n } from "./I18nProvider";
 import { TEMPLATES, getTemplate } from "@/lib/templates";
 
 const BOOK_PLAN_META = [
-  { id: "standard", price: "$100" },
-  { id: "luxury", price: "$165" },
+  { id: "standard", price: "$100", planName: "Estándar" },
+  { id: "premium", price: "$165", planName: "Premium" },
+  { id: "vip", price: "$200", planName: "Premium VIP" },
 ];
 
 export default function BookForm() {
@@ -16,8 +17,10 @@ export default function BookForm() {
   const params = useSearchParams();
   const router = useRouter();
   const preselected = getTemplate(params.get("template") || "");
+  const planParam = params.get("plan");
+  const initialPlan = ["standard", "premium", "vip"].includes(planParam) ? planParam : "standard";
 
-  const [plan, setPlan] = useState("standard");
+  const [plan, setPlan] = useState(initialPlan);
   const [template, setTemplate] = useState(preselected?.slug || TEMPLATES[0].slug);
   const [values, setValues] = useState({
     names: "", email: "", phone: "", eventType: "", date: "", place: "", notes: "",
@@ -31,7 +34,7 @@ export default function BookForm() {
   async function onSubmit(e) {
     e.preventDefault();
     setSubmitting(true);
-    const planName = plan === "luxury" ? "Luxury" : "Standard";
+    const planName = (BOOK_PLAN_META.find((m) => m.id === plan) || BOOK_PLAN_META[0]).planName;
     try {
       await fetch("/api/reservations", {
         method: "POST",
@@ -67,7 +70,7 @@ export default function BookForm() {
           {/* Plan */}
           <div>
             <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>{t("book.planLabel")}</p>
-            <div className="grid grid-2" style={{ gap: 12 }}>
+            <div className="grid grid-3" style={{ gap: 12 }}>
               {BOOK_PLAN_META.map((meta, i) => {
                 const active = plan === meta.id;
                 const info = Array.isArray(planTexts) ? planTexts[i] : { name: meta.id, note: "" };

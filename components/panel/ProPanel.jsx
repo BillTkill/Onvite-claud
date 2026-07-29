@@ -1,6 +1,6 @@
 "use client";
 
-import { PanelHero, DesignCard, EventDetails, StatRow, AttendanceBar, ShareCard, UploadPermissions, GuestList, ExtraCard } from "./parts";
+import { PanelHero, DesignCard, EventDetails, StatRow, AttendanceBar, ShareCard, GuestList, ExtraCard } from "./parts";
 import { useI18n } from "@/components/I18nProvider";
 import { formatDate, formatTime } from "@/lib/format";
 
@@ -19,6 +19,7 @@ export default function ProPanel({ view }) {
       <div className="p-split" style={{ marginTop: 24 }}>
         <DesignCard couple={view.couple} label={t("panel.yourDesign")} designName={view.designName} gradient={GOLD} lines={[dateLabel, time]} />
         <EventDetails
+          mapQuery={view.address || view.venue}
           rows={[
             { label: t("panel.fields.date"), value: dateLabel },
             { label: t("panel.fields.time"), value: time },
@@ -32,7 +33,7 @@ export default function ProPanel({ view }) {
 
       <div style={{ marginTop: 16 }}><StatRow stats={view.stats} daysLeft={view.daysLeft} /></div>
       <div style={{ marginTop: 16 }}><AttendanceBar attending={view.attending} total={view.totalGuests} /></div>
-      <div style={{ marginTop: 16 }}><ShareCard inline /></div>
+      <div style={{ marginTop: 16 }}><ShareCard inline couple={view.couple} /></div>
 
       <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917", marginTop: 20 }}>{t("panel.pro.albumGifts")}</h2>
       <div className="p-half" style={{ marginTop: 14 }}>
@@ -54,7 +55,6 @@ export default function ProPanel({ view }) {
         />
       </div>
 
-      <div style={{ marginTop: 16 }}><UploadPermissions guests={view.guests} /></div>
       <div style={{ marginTop: 16 }}><GuestList guests={view.guests} withFilter /></div>
 
       <p style={{ textAlign: "center", color: "#9ca3af", marginTop: 20, fontSize: 12 }}>{t("panel.pro.note")}</p>

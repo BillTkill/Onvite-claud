@@ -4,44 +4,47 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import Icon from "@/components/Icon";
+import { useI18n } from "@/components/I18nProvider";
 
 const NAV = [
-  { href: "/admin", label: "Resumen", icon: "layout" },
-  { href: "/admin/ventas", label: "Ventas", icon: "barChart" },
-  { href: "/admin/usuarios", label: "Usuarios", icon: "users" },
-  { href: "/admin/clientes", label: "Clientes", icon: "user" },
-  { href: "/admin/accesos", label: "Accesos", icon: "key" },
-  { href: "/admin/consultas", label: "Consultas", icon: "mail" },
-  { href: "/admin/redes", label: "Redes sociales", icon: "share" },
+  { href: "/admin", key: "resumen", icon: "layout" },
+  { href: "/admin/ventas", key: "ventas", icon: "barChart" },
+  { href: "/admin/usuarios", key: "usuarios", icon: "users" },
+  { href: "/admin/clientes", key: "clientes", icon: "user" },
+  { href: "/admin/accesos", key: "accesos", icon: "key" },
+  { href: "/admin/paneles", key: "paneles", icon: "settings" },
+  { href: "/admin/consultas", key: "consultas", icon: "mail" },
+  { href: "/admin/redes", key: "redes", icon: "share" },
 ];
 
 export default function AdminShell({ children }) {
   const pathname = usePathname();
+  const { t } = useI18n();
 
   return (
     <div className="admin-shell">
       <aside className="admin-sidebar">
         <div className="admin-brand">
-          <span className="serif" style={{ fontSize: 18, fontWeight: 700, color: "var(--brand700)" }}>✦ Onvite Admin</span>
+          <span className="serif" style={{ fontSize: 18, fontWeight: 700, color: "var(--brand700)" }}>{t("admin.brand")}</span>
         </div>
         <nav className="admin-nav">
           {NAV.map((n) => {
             const active = n.href === "/admin" ? pathname === "/admin" : pathname.startsWith(n.href);
             return (
               <Link key={n.href} href={n.href} className={`admin-nav__item ${active ? "admin-nav__item--active" : ""}`}>
-                <Icon name={n.icon} size={16} /> {n.label}
+                <Icon name={n.icon} size={16} /> {t(`admin.nav.${n.key}`)}
               </Link>
             );
           })}
         </nav>
         <div className="admin-sidebar__footer">
-          <Link href="/" className="admin-nav__item">← Volver al sitio</Link>
+          <Link href="/" className="admin-nav__item">{t("admin.backToSite")}</Link>
           <button
             className="admin-nav__item"
             style={{ color: "#dc2626", width: "100%", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
             onClick={() => signOut({ callbackUrl: "/" })}
           >
-            Cerrar sesión
+            {t("admin.logout")}
           </button>
         </div>
       </aside>

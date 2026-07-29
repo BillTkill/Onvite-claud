@@ -68,7 +68,21 @@ async function main() {
     ],
   });
 
-  // --- Extra registered users (for the admin "Usuarios" screen) ----------
+  // --- María's gift registry --------------------------------------------
+  await prisma.gift.deleteMany({ where: { eventId: event.id } });
+  await prisma.gift.createMany({
+    data: [
+      { eventId: event.id, name: "Juego de vajilla", reservedBy: "Ana Flores" },
+      { eventId: event.id, name: "Cafetera espresso", reservedBy: null },
+      { eventId: event.id, name: "Set de copas de cristal", reservedBy: "Familia Rojas" },
+      { eventId: event.id, name: "Mantelería de lino", reservedBy: null },
+      { eventId: event.id, name: "Robot de cocina", reservedBy: null },
+    ],
+  });
+
+  // --- Client accounts (all appear in Usuarios AND have a matching booking) ---
+  // Every client user below also has a reservation (same email) so the data is
+  // coherent across Usuarios / Clientes / Accesos / Paneles.
   const extraUsers = [
     { name: "Rosa & Fernando", username: "rosaf", email: "rosaf@mail.com" },
     { name: "Diego & Laura", username: "diegolaura", email: "diegolaura@mail.com" },
@@ -76,6 +90,7 @@ async function main() {
     { name: "Marco Ortiz", username: "marcoo", email: "marco2@mail.com" },
     { name: "Carla Nunez", username: "carlan", email: "carla@mail.com" },
     { name: "Ana Castro", username: "anac", email: "ana@mail.com" },
+    { name: "Familia Choque", username: "choque", email: "choque@mail.com" },
   ];
   const demoHash = await hash("Demo123!");
   for (const u of extraUsers) {
@@ -86,14 +101,38 @@ async function main() {
     });
   }
 
+  // --- Three clean TEST accounts (one per plan) for end-to-end testing -----
+  const testHash = await hash("Test123!");
+  const testUsers = [
+    { name: "Prueba Estándar", username: "test_basico", email: "basico@test.com" },
+    { name: "Prueba Premium", username: "test_premium", email: "premium@test.com" },
+    { name: "Prueba VIP", username: "test_vip", email: "vip@test.com" },
+  ];
+  for (const u of testUsers) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: {},
+      create: { ...u, passwordHash: testHash, role: "CLIENT" },
+    });
+  }
+
   // --- CRM reservations (Clientes / Ventas / Accesos) --------------------
+  // Only three canonical plans: "Estándar", "Premium", "Premium VIP".
+  // One reservation per client account so everyone is coherent across screens.
   await prisma.reservation.deleteMany({});
   await prisma.reservation.createMany({
     data: [
-      { names: "María & Carlos", email: "maria@mail.com", eventType: "Boda", city: "Santa Cruz", eventDate: new Date("2026-09-19"), plan: "Pro (Premium)", paymentMethod: "PayPal", amount: 243, contactStatus: "CERRADO", paymentStatus: "PAGADO", accessState: "POR_HABILITAR" },
-      { names: "Valentina R.", email: "valen@mail.com", eventType: "XV Años", city: "Cochabamba", eventDate: new Date("2026-10-11"), plan: "Premium Plus", paymentMethod: "Airtm", amount: 383, contactStatus: "CONTACTADO", paymentStatus: "PENDIENTE", accessState: "ACTIVO" },
-      { names: "Diego & Laura", email: "diegolaura@mail.com", eventType: "Compromiso", city: "La Paz", eventDate: new Date("2026-11-01"), plan: "Estándar", contactStatus: "SIN_CONTACTAR", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR" },
-      { names: "Familia Choque", email: "choque@mail.com", eventType: "Bautizo", city: "El Alto", eventDate: new Date("2026-08-20"), plan: "Basico", paymentMethod: "Tigo Money", amount: 104, contactStatus: "CONTACTADO", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR" },
+      { names: "María & Carlos", email: "maria@mail.com", eventType: "Boda", city: "Santa Cruz", eventDate: new Date("2026-09-19"), plan: "Premium", paymentMethod: "PayPal", amount: 165, contactStatus: "CERRADO", paymentStatus: "PAGADO", accessState: "ACTIVO", templateSlug: "beach-romance", notes: "Queremos tonos tierra y dorados. La música: nuestra canción es «Perfect». Boda de día en jardín." },
+      { names: "Rosa & Fernando", email: "rosaf@mail.com", eventType: "Boda", city: "Tarija", eventDate: new Date("2026-10-04"), plan: "Premium VIP", paymentMethod: "QR Simple (BCB)", amount: 200, contactStatus: "CONTACTADO", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR", templateSlug: "elegant-royal" },
+      { names: "Valentina R.", email: "valen@mail.com", eventType: "XV Años", city: "Cochabamba", eventDate: new Date("2026-10-11"), plan: "Premium VIP", paymentMethod: "Airtm", amount: 200, contactStatus: "CONTACTADO", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR", templateSlug: "dark-blue-garden", notes: "Tema: noche estelar, azul y plata. 250 invitados. Quiero álbum QR y música en vivo." },
+      { names: "Diego & Laura", email: "diegolaura@mail.com", eventType: "Compromiso", city: "La Paz", eventDate: new Date("2026-11-01"), plan: "Estándar", contactStatus: "SIN_CONTACTAR", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR", templateSlug: "quiet-luxury" },
+      { names: "Marco Ortiz", email: "marco2@mail.com", eventType: "Graduación", city: "Sucre", eventDate: new Date("2026-12-05"), plan: "Estándar", paymentMethod: "Transferencia bancaria", amount: 100, contactStatus: "CONTACTADO", paymentStatus: "PAGADO", accessState: "POR_HABILITAR", templateSlug: "ciel-divin" },
+      { names: "Carla Nunez", email: "carla@mail.com", eventType: "Boda", city: "Santa Cruz", eventDate: new Date("2026-09-27"), plan: "Premium", paymentMethod: "PayPal", amount: 165, contactStatus: "CERRADO", paymentStatus: "PAGADO", accessState: "POR_HABILITAR", templateSlug: "classy-floral" },
+      { names: "Ana Castro", email: "ana@mail.com", eventType: "Boda", city: "Beni", eventDate: new Date("2026-11-15"), plan: "Premium VIP", contactStatus: "SIN_CONTACTAR", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR", templateSlug: "tuscan-wine" },
+      { names: "Familia Choque", email: "choque@mail.com", eventType: "Bautizo", city: "El Alto", eventDate: new Date("2026-08-20"), plan: "Estándar", paymentMethod: "Tigo Money", amount: 100, contactStatus: "CONTACTADO", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR", templateSlug: "french-village" },
+      { names: "Prueba Estándar", email: "basico@test.com", eventType: "Boda", city: "Santa Cruz", eventDate: new Date("2026-10-18"), plan: "Estándar", contactStatus: "SIN_CONTACTAR", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR", templateSlug: "gondola-dream" },
+      { names: "Prueba Premium", email: "premium@test.com", eventType: "Boda", city: "Cochabamba", eventDate: new Date("2026-11-08"), plan: "Premium", contactStatus: "SIN_CONTACTAR", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR", templateSlug: "eternal-navy", notes: "Cuenta de prueba Premium. Nos gusta el azul marino y dorado." },
+      { names: "Prueba VIP", email: "vip@test.com", eventType: "Boda", city: "La Paz", eventDate: new Date("2026-12-13"), plan: "Premium VIP", contactStatus: "SIN_CONTACTAR", paymentStatus: "PENDIENTE", accessState: "POR_HABILITAR", templateSlug: "elegant-royal" },
     ],
   });
 

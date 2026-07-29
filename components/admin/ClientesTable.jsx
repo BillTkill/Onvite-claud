@@ -2,13 +2,28 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { setContactStatus, setPaymentStatus } from "@/app/admin/actions";
-import { CONTACT_LABEL, CONTACT_OPTIONS, PAYMENT_LABEL, PAYMENT_OPTIONS } from "@/lib/admin-display";
+import { CONTACT_OPTIONS, PAYMENT_OPTIONS } from "@/lib/admin-display";
+import { useI18n } from "@/components/I18nProvider";
 
 export default function ClientesTable({ rows }) {
+  const { t } = useI18n();
   const [q, setQ] = useState("");
   const [contacto, setContacto] = useState("Todo contacto");
   const [pago, setPago] = useState("Todo pago");
   const [pending, start] = useTransition();
+  const contactLabel = (o) => t(`admin.status.contact.${o}`);
+  const paymentLabel = (o) => t(`admin.status.payment.${o}`);
+  // Colored status selects for a quicker visual read.
+  const CONTACT_STYLE = {
+    SIN_CONTACTAR: { background: "#fee2e2", color: "#b91c1c", borderColor: "#fca5a5" },
+    CONTACTADO: { background: "#dbeafe", color: "#1d4ed8", borderColor: "#93c5fd" },
+    CERRADO: { background: "#dcfce7", color: "#15803d", borderColor: "#86efac" },
+  };
+  const PAYMENT_STYLE = {
+    PENDIENTE: { background: "#fee2e2", color: "#b91c1c", borderColor: "#fca5a5" },
+    PAGADO: { background: "#dcfce7", color: "#15803d", borderColor: "#86efac" },
+  };
+  const selStyle = (p) => ({ ...p, borderWidth: 1, borderStyle: "solid", borderRadius: 999, padding: "4px 10px", fontWeight: 600, cursor: "pointer" });
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -26,17 +41,17 @@ export default function ClientesTable({ rows }) {
         <input
           className="input"
           style={{ flex: 1, minWidth: 200, marginTop: 0 }}
-          placeholder="Buscar por nombre, ciudad o evento..."
+          placeholder={t("admin.clientes.searchPh")}
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
         <select className="select" style={{ width: "auto", marginTop: 0 }} value={contacto} onChange={(e) => setContacto(e.target.value)}>
-          <option value="Todo contacto">Todo contacto</option>
-          {CONTACT_OPTIONS.map((o) => <option key={o} value={o}>{CONTACT_LABEL[o]}</option>)}
+          <option value="Todo contacto">{t("admin.clientes.allContact")}</option>
+          {CONTACT_OPTIONS.map((o) => <option key={o} value={o}>{contactLabel(o)}</option>)}
         </select>
         <select className="select" style={{ width: "auto", marginTop: 0 }} value={pago} onChange={(e) => setPago(e.target.value)}>
-          <option value="Todo pago">Todo pago</option>
-          {PAYMENT_OPTIONS.map((o) => <option key={o} value={o}>{PAYMENT_LABEL[o]}</option>)}
+          <option value="Todo pago">{t("admin.clientes.allPay")}</option>
+          {PAYMENT_OPTIONS.map((o) => <option key={o} value={o}>{paymentLabel(o)}</option>)}
         </select>
       </div>
 
@@ -44,7 +59,7 @@ export default function ClientesTable({ rows }) {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Nombre</th><th>Evento</th><th>Fecha</th><th>Plan</th><th>Pago</th><th>Contacto</th><th>Estado</th><th>Acciones</th>
+              <th>{t("admin.clientes.thName")}</th><th>{t("admin.clientes.thEvent")}</th><th>{t("admin.clientes.thDate")}</th><th>{t("admin.clientes.thPlan")}</th><th>{t("admin.clientes.thPay")}</th><th>{t("admin.clientes.thContact")}</th><th>{t("admin.clientes.thStatus")}</th><th>{t("admin.clientes.thActions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -56,26 +71,26 @@ export default function ClientesTable({ rows }) {
                 <td style={{ color: "#6b7280" }}>{r.plan}</td>
                 <td style={{ color: "#6b7280" }}>{r.pay}{r.amount && <><br /><span style={{ fontSize: 12, color: "#9ca3af" }}>{r.amount}</span></>}</td>
                 <td>
-                  <select className="cell-select" disabled={pending} value={r.contact} onChange={(e) => start(() => setContactStatus(r.id, e.target.value))} aria-label="Estado de contacto">
-                    {CONTACT_OPTIONS.map((o) => <option key={o} value={o}>{CONTACT_LABEL[o]}</option>)}
+                  <select className="cell-select" style={selStyle(CONTACT_STYLE[r.contact])} disabled={pending} value={r.contact} onChange={(e) => start(() => setContactStatus(r.id, e.target.value))} aria-label={t("admin.clientes.thContact")}>
+                    {CONTACT_OPTIONS.map((o) => <option key={o} value={o}>{contactLabel(o)}</option>)}
                   </select>
                 </td>
                 <td>
-                  <select className="cell-select" disabled={pending} value={r.status} onChange={(e) => start(() => setPaymentStatus(r.id, e.target.value))} aria-label="Estado de pago">
-                    {PAYMENT_OPTIONS.map((o) => <option key={o} value={o}>{PAYMENT_LABEL[o]}</option>)}
+                  <select className="cell-select" style={selStyle(PAYMENT_STYLE[r.status])} disabled={pending} value={r.status} onChange={(e) => start(() => setPaymentStatus(r.id, e.target.value))} aria-label={t("admin.clientes.thStatus")}>
+                    {PAYMENT_OPTIONS.map((o) => <option key={o} value={o}>{paymentLabel(o)}</option>)}
                   </select>
                 </td>
-                <td><span className="cell-select">Editar</span></td>
+                <td><span className="cell-select">{t("admin.edit")}</span></td>
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={8} style={{ textAlign: "center", color: "#9ca3af", padding: "20px 0" }}>Sin resultados.</td></tr>
+              <tr><td colSpan={8} style={{ textAlign: "center", color: "#9ca3af", padding: "20px 0" }}>{t("admin.clientes.noResults")}</td></tr>
             )}
           </tbody>
         </table>
       </div>
       <p style={{ marginTop: 12, fontSize: 12, color: "#9ca3af" }}>
-        Los cambios de estado se guardan al instante en la base de datos.
+        {t("admin.clientes.note")}
       </p>
     </div>
   );

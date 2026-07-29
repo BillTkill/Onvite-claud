@@ -93,11 +93,25 @@ model Event {
   albumPhotosPerGuest Int?
   albumDays          Int?
   accessDurationDays Int?
+  musicAutoplay      Boolean  @default(true)
   active             Boolean  @default(true)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
   guests             Guest[]
+  gifts              Gift[]
+}
+
+/// A gift on the couple's registry. `reservedBy` is null while available.
+model Gift {
+  id         String   @id @default(cuid())
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId    String
+  name       String
+  reservedBy String?
+  createdAt  DateTime @default(now())
+
+  @@index([eventId])
 }
 
 model Guest {
@@ -139,6 +153,16 @@ model Reservation {
   updatedAt     DateTime      @updatedAt
 
   @@index([userId])
+}
+
+/// Social network integration state (admin "Redes"). Real metrics come from
+/// each platform's API in production; tokens/keys live in env vars, not here.
+model SocialConnection {
+  id        String   @id @default(cuid())
+  network   String   @unique // "facebook" | "instagram" | "tiktok" | "youtube" | "x" | "telegram"
+  connected Boolean  @default(false)
+  handle    String?
+  updatedAt DateTime @updatedAt
 }
 
 /// Unified inbox message (WhatsApp / Instagram / Telegram / email …).

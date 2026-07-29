@@ -6,7 +6,7 @@ import BasicPanel from "@/components/panel/BasicPanel";
 import ProPanel from "@/components/panel/ProPanel";
 import VipPanel from "@/components/panel/VipPanel";
 import LockedPanel from "@/components/panel/LockedPanel";
-import { daysUntil, rsvpKey } from "@/lib/format";
+import { daysUntil, rsvpKey, accessInfo } from "@/lib/format";
 
 export const metadata = { title: "Mi panel · Onvite" };
 
@@ -19,7 +19,8 @@ export default async function PanelPage() {
     include: { guests: { orderBy: { createdAt: "asc" } } },
   });
 
-  const active = !!event && event.active;
+  const { expired } = accessInfo(event?.createdAt, event?.accessDurationDays);
+  const active = !!event && event.active && !expired; // expired access auto-locks the panel
   const plan = active ? event.plan.toLowerCase() : null;
 
   let body;
@@ -27,6 +28,7 @@ export default async function PanelPage() {
     body = <LockedPanel />;
   } else {
     const guests = event.guests.map((g) => ({
+      id: g.id,
       name: g.name,
       companions: g.companions,
       channel: g.channel, // raw enum, translated client-side

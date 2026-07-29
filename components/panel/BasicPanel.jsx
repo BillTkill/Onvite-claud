@@ -20,6 +20,7 @@ export default function BasicPanel({ view }) {
       <div className="p-split" style={{ marginTop: 24 }}>
         <DesignCard couple={view.couple} label={t("panel.yourDesign")} designName={view.designName} gradient={GOLD} lines={[`${dateLabel} · ${time}`]} />
         <EventDetails
+          mapQuery={view.address || view.venue}
           rows={[
             { label: t("panel.fields.date"), value: dateLabel },
             { label: t("panel.fields.time"), value: time },
@@ -42,7 +43,7 @@ export default function BasicPanel({ view }) {
             <p style={{ fontSize: 13, color: "#9ca3af" }}>{t("panel.basic.totalOnly")}</p>
           </div>
         </div>
-        <ShareCard />
+        <ShareCard couple={view.couple} />
       </div>
 
       <div
