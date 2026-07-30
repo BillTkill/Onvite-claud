@@ -1,6 +1,6 @@
-# 📋 Parte de trabajo — Marco (28/07/2026)
+# 📋 Parte de trabajo — Marco (28–30/07/2026)
 
-Hola 👋. Este archivo explica **todo lo que hice en esta sesión** para que puedas continuar sin perderte. Léelo de arriba a abajo; al final está el paso a paso para actualizar tu repositorio y arrancar.
+Hola 👋. Este archivo explica **todo lo que hice en estas sesiones** para que puedas continuar sin perderte. Léelo de arriba a abajo; **el trabajo más reciente (29–30/07) está en las secciones "Segunda/Tercera/Cuarta tanda" más abajo**. Al final del bloque inicial está el paso a paso para actualizar tu repositorio y arrancar.
 
 ---
 
