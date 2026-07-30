@@ -1,5 +1,6 @@
 import { AdminTitle, Kpi } from "@/components/admin/AdminShell";
 import ClientesTable from "@/components/admin/ClientesTable";
+import AddContact from "@/components/admin/AddContact";
 import { getClientes } from "@/lib/admin-queries";
 import { getServerT } from "@/lib/i18n/server";
 
@@ -27,11 +28,7 @@ export default async function AdminClientesPage() {
       <AdminTitle
         title={t("admin.clientes.title")}
         subtitle={t("admin.clientes.subtitle")}
-        action={
-          <button style={{ background: "var(--brand600)", color: "#fff", border: "none", borderRadius: 999, padding: "8px 16px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}>
-            {t("admin.clientes.addContact")}
-          </button>
-        }
+        action={<AddContact />}
       />
       <div className="admin-kpis admin-kpis--5">
         {kpis.map((k) => <Kpi key={k.label} {...k} />)}

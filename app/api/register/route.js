@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   name: z.string().trim().min(1),
@@ -11,6 +12,9 @@ const schema = z.object({
 });
 
 export async function POST(req) {
+  if (!rateLimit(`register:${clientIp(req)}`, { limit: 5, windowMs: 60_000 }).ok) {
+    return NextResponse.json({ ok: false, error: "rate" }, { status: 429 });
+  }
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
@@ -27,7 +31,7 @@ export async function POST(req) {
     return NextResponse.json({ ok: false, error: "exists" }, { status: 409 });
   }
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await bcrypt.hash(password, 12);
   await prisma.user.create({
     data: { name, username, email: emailNorm, passwordHash, role: "CLIENT" },
   });

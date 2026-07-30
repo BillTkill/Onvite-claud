@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   slug: z.string().trim().min(1),
@@ -13,6 +14,9 @@ const schema = z.object({
  * If the couple enabled "review before publishing", photos start unapproved.
  */
 export async function POST(req) {
+  if (!rateLimit(`album:${clientIp(req)}`, { limit: 10, windowMs: 60_000 }).ok) {
+    return NextResponse.json({ ok: false, error: "rate" }, { status: 429 });
+  }
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {

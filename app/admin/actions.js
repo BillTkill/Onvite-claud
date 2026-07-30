@@ -1,6 +1,8 @@
 "use server";
 
 import { z } from "zod";
+import crypto from "node:crypto";
+import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
@@ -20,6 +22,36 @@ function refreshAdmin() {
 const ContactEnum = z.enum(["SIN_CONTACTAR", "CONTACTADO", "CERRADO"]);
 const PaymentEnum = z.enum(["PENDIENTE", "PAGADO"]);
 const PlanEnum = z.enum(["BASICO", "PRO", "VIP"]);
+
+const AddContactSchema = z.object({
+  names: z.string().trim().min(1).max(120),
+  email: z.string().trim().email(),
+  phone: z.string().trim().max(40).optional().or(z.literal("")),
+  eventType: z.string().trim().min(1).max(60),
+  city: z.string().trim().max(80).optional().or(z.literal("")),
+  date: z.string().optional(), // yyyy-mm-dd
+  plan: z.enum(["Estándar", "Premium", "Premium VIP"]),
+});
+
+/** Add a new CRM contact (a reservation) manually from the Clientes screen. */
+export async function addContact(raw) {
+  await requireAdmin();
+  const d = AddContactSchema.parse(raw);
+  const eventDate = d.date ? new Date(d.date) : null;
+  await prisma.reservation.create({
+    data: {
+      names: d.names,
+      email: d.email.trim().toLowerCase(),
+      phone: d.phone || null,
+      eventType: d.eventType,
+      city: d.city || null,
+      eventDate: eventDate && !isNaN(eventDate.getTime()) ? eventDate : null,
+      plan: d.plan,
+    },
+  });
+  refreshAdmin();
+  return { ok: true };
+}
 
 export async function setContactStatus(id, status) {
   await requireAdmin();
@@ -81,7 +113,8 @@ export async function assignUserPlan(userId, plan) {
   const album = value === "VIP" ? { albumPhotosPerGuest: 30, albumDays: 90 } : { albumPhotosPerGuest: 15, albumDays: 60 };
   await prisma.event.upsert({
     where: { ownerId: userId },
-    update: { plan: value, active: true, ...album },
+    // Setting the plan does NOT grant access; only "Dar acceso" activates it.
+    update: { plan: value, ...album },
     create: {
       ownerId: userId,
       coupleName: user.name,
@@ -89,7 +122,8 @@ export async function assignUserPlan(userId, plan) {
       dateTime: new Date(Date.now() + 60 * 86400000),
       venue: "Por definir",
       plan: value,
-      active: true,
+      slug: slugify(user.name),
+      active: false,
       accessDurationDays: 90,
       totalGuests: 0,
       ...album,
@@ -126,7 +160,8 @@ export async function grantAccess(userId, opts = {}) {
 
   await prisma.event.upsert({
     where: { ownerId: user.id },
-    update: { active: true, plan, accessDurationDays: duration, ...album, templateSlug: templateSlug ?? undefined },
+    // Granting access activates the panel and (re)starts the days countdown now.
+    update: { active: true, plan, accessDurationDays: duration, createdAt: new Date(), ...album, templateSlug: templateSlug ?? undefined },
     create: {
       ownerId: user.id,
       coupleName: reservation?.names || user.name,
@@ -175,12 +210,81 @@ export async function createEventForUser(userId, plan = "BASICO") {
       venue: "Por definir",
       plan: value,
       slug: slugify(user.name),
-      active: true,
+      active: false, // access is only granted from Accesos ("Dar acceso")
       accessDurationDays: 90,
       totalGuests: 0,
       ...albumForPlan(value),
     },
   });
+  refreshAdmin();
+  revalidatePath("/panel");
+  return { ok: true };
+}
+
+/**
+ * Enable a registered user for panel management (from Usuarios): creates an
+ * inactive event using the plan from their booking, so they appear in Paneles
+ * and Accesos. Access itself is still granted separately from Accesos.
+ */
+export async function enablePanel(userId) {
+  await requireAdmin();
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) return { ok: false, error: "Usuario no encontrado." };
+  const existing = await prisma.event.findUnique({ where: { ownerId: userId } });
+  if (existing) return { ok: true };
+  const reservation = await prisma.reservation.findFirst({ where: { email: user.email }, orderBy: { createdAt: "desc" } });
+  const plan = planStringToEnum(reservation?.plan || "");
+  await prisma.event.create({
+    data: {
+      ownerId: userId,
+      coupleName: reservation?.names || user.name,
+      title: `Evento de ${reservation?.names || user.name}`,
+      dateTime: reservation?.eventDate ?? new Date(Date.now() + 60 * 86400000),
+      venue: reservation?.city || "Por definir",
+      plan,
+      templateSlug: reservation?.templateSlug || null,
+      slug: slugify(reservation?.names || user.name),
+      active: false, // access is granted later from Accesos
+      accessDurationDays: 90,
+      totalGuests: 0,
+      ...albumForPlan(plan),
+    },
+  });
+  refreshAdmin();
+  revalidatePath("/panel");
+  return { ok: true };
+}
+
+/** Delete a CRM contact (reservation). */
+export async function deleteReservation(id) {
+  await requireAdmin();
+  await prisma.reservation.delete({ where: { id } });
+  refreshAdmin();
+  return { ok: true };
+}
+
+/**
+ * Admin-assisted password reset: generates a strong temporary password, saves
+ * its hash, and returns the plaintext once so the admin can relay it to the
+ * client (e.g. by WhatsApp). No email service required.
+ */
+export async function resetUserPassword(userId) {
+  await requireAdmin();
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+  if (!u || u.role === "ADMIN") return { ok: false, error: "No permitido." };
+  const temp = crypto.randomBytes(6).toString("base64url"); // ~8 url-safe chars
+  const passwordHash = await bcrypt.hash(temp, 12);
+  await prisma.user.update({ where: { id: userId }, data: { passwordHash } });
+  refreshAdmin();
+  return { ok: true, temp };
+}
+
+/** Delete a client user account (cascades their event, photos, gifts). */
+export async function deleteUser(userId) {
+  await requireAdmin();
+  const u = await prisma.user.findUnique({ where: { id: userId }, select: { role: true } });
+  if (!u || u.role === "ADMIN") return { ok: false, error: "No permitido." };
+  await prisma.user.delete({ where: { id: userId } });
   refreshAdmin();
   revalidatePath("/panel");
   return { ok: true };
@@ -197,6 +301,7 @@ const EventEditSchema = z.object({
   plan: PlanEnum,
   templateSlug: z.string().trim().max(80).optional().or(z.literal("")),
   music: z.string().trim().max(200).optional().or(z.literal("")),
+  musicUrl: z.string().trim().max(300).optional().or(z.literal("")),
   paymentQr: z.string().trim().max(400000).optional().or(z.literal("")), // holds an image data URL
   albumUrl: z.string().trim().max(300).optional().or(z.literal("")),
   totalGuests: z.coerce.number().int().min(0).max(100000).optional(),
@@ -230,6 +335,7 @@ export async function updateEvent(eventId, raw) {
       plan: data.plan,
       templateSlug: data.templateSlug || null,
       music: data.music || null,
+      musicUrl: data.musicUrl || null,
       paymentQr: data.paymentQr || null,
       albumUrl: data.albumUrl || null,
       slug: event.slug || slugify(data.coupleName), // set once, keep stable

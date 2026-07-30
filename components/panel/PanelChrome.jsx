@@ -32,6 +32,7 @@ export default function PanelChrome({ plan, children }) {
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <PlanBadge plan={plan} t={t} />
             <LangSelect />
+            <Link href="/cuenta" style={{ fontSize: 12, color: "#6b7280" }}>{t("cuenta.title")}</Link>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
               style={{ border: "1px solid #e5e7eb", background: "#fff", borderRadius: 999, padding: "6px 12px", fontSize: 12, fontWeight: 600, color: "#4b5563", cursor: "pointer" }}

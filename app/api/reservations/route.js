@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
+import { rateLimit, clientIp } from "@/lib/rate-limit";
 
 const schema = z.object({
   plan: z.string().optional(),
@@ -17,6 +18,9 @@ const schema = z.object({
 });
 
 export async function POST(req) {
+  if (!rateLimit(`reservations:${clientIp(req)}`, { limit: 5, windowMs: 60_000 }).ok) {
+    return NextResponse.json({ ok: false, error: "rate" }, { status: 429 });
+  }
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {

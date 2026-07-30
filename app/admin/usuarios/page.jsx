@@ -1,6 +1,8 @@
 import { AdminTitle, Kpi, Badge } from "@/components/admin/AdminShell";
 import UserPlanSelect from "@/components/admin/UserPlanSelect";
 import UserNote from "@/components/admin/UserNote";
+import DeleteButton from "@/components/admin/DeleteButton";
+import ResetPassword from "@/components/admin/ResetPassword";
 import { getUsers } from "@/lib/admin-queries";
 import { PLAN_ENUM, REGISTRADO } from "@/lib/admin-display";
 import { getServerT } from "@/lib/i18n/server";
@@ -57,7 +59,13 @@ export default async function AdminUsuariosPage() {
                     <td style={{ color: "#9ca3af" }}>{u.date}</td>
                     <td><UserNote note={u.note} /></td>
                     <td><Badge label={badgeLabel} palette={badge.palette} /></td>
-                    <td><UserPlanSelect userId={u.id} plan={u.plan} hasEvent={u.hasEvent} /></td>
+                    <td>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <UserPlanSelect userId={u.id} plan={u.plan} hasEvent={u.hasEvent} />
+                        <ResetPassword userId={u.id} />
+                        <DeleteButton kind="user" id={u.id} confirm={t("admin.usuarios.deleteConfirm")} label={t("admin.usuarios.delete")} />
+                      </div>
+                    </td>
                   </tr>
                 );
               })}

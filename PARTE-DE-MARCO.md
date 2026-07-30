@@ -247,3 +247,28 @@ Se agregaron: `Photo` (fotos del álbum), y campos en `Event`: `musicUrl`, `paym
 - Respaldo real en Google Drive para el álbum (hoy sin conectar).
 
 — Marco
+
+---
+
+# 1️⃣2️⃣ Cuarta tanda — flujo de habilitación, cuentas, seguridad y checklist
+
+## Flujo admin (coherente y controlado)
+- **Clientes**: todas las citas/reservas (con o sin cuenta). Botón **✕** para eliminar contactos.
+- **Usuarios**: cuentas registradas. Botón **"Habilitar panel"** — solo con esto el usuario pasa a **Paneles** y **Accesos** (ya no es automático). Botón **🔑** para restablecer contraseña (temporal por WhatsApp) y **✕** para eliminar la cuenta.
+- **Paneles / Accesos**: muestran **solo los usuarios habilitados**.
+- Reserva sin cuenta → aparece en Clientes; cuando el cliente crea su cuenta y el admin pulsa "Habilitar panel", pasa a Paneles/Accesos.
+
+## Cuentas / contraseñas
+- **Cambiar contraseña** (self-service, logueado): `/cuenta` (desde el menú de cuenta o la barra del panel).
+- **Recuperación asistida por admin**: botón 🔑 en Usuarios.
+- **Recuperación por correo** (self-service tipo Google): pendiente — necesita servicio de email. **NUNCA se guardan contraseñas en texto plano**, solo hash bcrypt.
+
+## Seguridad (blindaje)
+- **Rate limiting** (`lib/rate-limit.js`) en registro, reservas, subidas y álbum.
+- **Cabeceras de seguridad** en `next.config.mjs` (X-Frame-Options, nosniff, HSTS, etc.). **Requiere reiniciar el server tras pull.**
+- Subidas con **lista blanca de tipos (sin SVG)**; bcrypt coste 12.
+
+## Producción
+- **`docs/ANTES-DE-PRODUCCION.md`** — checklist completa de lo que falta antes de subir a la nube (almacenamiento, base gestionada, correo, CSP, quitar cuentas demo, etc.).
+
+— Marco

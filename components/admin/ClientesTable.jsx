@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { setContactStatus, setPaymentStatus } from "@/app/admin/actions";
 import { CONTACT_OPTIONS, PAYMENT_OPTIONS } from "@/lib/admin-display";
 import { useI18n } from "@/components/I18nProvider";
+import DeleteButton from "@/components/admin/DeleteButton";
 
 export default function ClientesTable({ rows }) {
   const { t } = useI18n();
@@ -80,7 +81,7 @@ export default function ClientesTable({ rows }) {
                     {PAYMENT_OPTIONS.map((o) => <option key={o} value={o}>{paymentLabel(o)}</option>)}
                   </select>
                 </td>
-                <td><span className="cell-select">{t("admin.edit")}</span></td>
+                <td><DeleteButton kind="reservation" id={r.id} confirm={t("admin.clientes.deleteConfirm")} label={t("admin.clientes.delete")} /></td>
               </tr>
             ))}
             {filtered.length === 0 && (

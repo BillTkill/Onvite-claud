@@ -56,8 +56,7 @@ function AccountMenu({ user }) {
             </div>
           </div>
           <div style={{ padding: 6 }}>
-            <button className="menu__item"><Icon name="user" size={16} /> {t("account.myInfo")}</button>
-            <button className="menu__item"><Icon name="settings" size={16} /> {t("account.settings")}</button>
+            <Link href="/cuenta" className="menu__item" onClick={() => setOpen(false)}><Icon name="settings" size={16} /> {t("account.settings")}</Link>
             <Link href="/panel" className="menu__item menu__item--gold" onClick={() => setOpen(false)}>
               <Icon name="layout" size={16} /> {t("account.myPanel")}
             </Link>

@@ -12,7 +12,7 @@ const toTimeStr = (d) => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 export default async function AdminPanelesPage() {
   const { t } = await getServerT();
   const users = await prisma.user.findMany({
-    where: { role: "CLIENT" },
+    where: { role: "CLIENT", event: { isNot: null } }, // only users enabled from Usuarios
     orderBy: { createdAt: "desc" }, // newest first
     include: { event: true },
   });
@@ -30,6 +30,7 @@ export default async function AdminPanelesPage() {
     userId: u.id,
     name: u.name,
     email: u.email,
+    hasAccount: true,
     event: u.event
       ? {
           id: u.event.id,
@@ -43,6 +44,7 @@ export default async function AdminPanelesPage() {
           plan: u.event.plan,
           templateSlug: u.event.templateSlug || "",
           music: u.event.music || "",
+          musicUrl: u.event.musicUrl || "",
           paymentQr: u.event.paymentQr || "",
           albumUrl: u.event.albumUrl || "",
           slug: u.event.slug || "",

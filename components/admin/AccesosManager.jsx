@@ -15,26 +15,26 @@ const PLAN_OPTIONS = ["BASICO", "PRO", "VIP"];
 
 export default function AccesosManager({ rows }) {
   const { t } = useI18n();
-  const firstPending = rows.find((r) => r.accessState === "POR_HABILITAR") || rows[0];
-  const [selected, setSelected] = useState(firstPending?.userId);
+  const firstPending = rows.find((r) => r.accessState === "POR_HABILITAR") || rows.find((r) => r.hasAccount) || rows[0];
+  const [selected, setSelected] = useState(firstPending?.email);
   const [duration, setDuration] = useState("90");
   const [plan, setPlan] = useState("BASICO");
   const [templateSlug, setTemplateSlug] = useState(TEMPLATES[0].slug);
   const [msg, setMsg] = useState(null);
   const [pending, start] = useTransition();
 
-  const current = rows.find((r) => r.userId === selected) || firstPending;
+  const current = rows.find((r) => r.email === selected) || firstPending;
 
-  // When the selected user changes, seed the plan/template with what their
+  // When the selected contact changes, seed the plan/template with what their
   // booking suggested — the admin can still change them before enabling.
   useEffect(() => {
     if (!current) return;
     setPlan(planStringToEnum(current.plan || ""));
     setTemplateSlug(current.templateSlug || TEMPLATES[0].slug);
-  }, [current?.userId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [current?.email]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function enable() {
-    if (!current) return;
+    if (!current?.hasAccount) return; // needs a user account
     setMsg(null);
     start(async () => {
       const res = await grantAccess(current.userId, { durationDays: Number(duration), plan, templateSlug });
@@ -59,7 +59,7 @@ export default function AccesosManager({ rows }) {
               </thead>
               <tbody>
                 {rows.map((r) => (
-                  <tr key={r.userId}>
+                  <tr key={r.email}>
                     <td style={{ padding: "10px 0", fontWeight: 600, color: "#1c1917" }}>
                       {r.name}<br /><span style={{ fontSize: 12, fontWeight: 400, color: "#9ca3af" }}>{r.email}</span>
                     </td>
@@ -71,18 +71,20 @@ export default function AccesosManager({ rows }) {
                       )}
                     </td>
                     <td>
-                      {r.accessState === "POR_HABILITAR" ? (
+                      {r.accessState === "NO_ACCOUNT" ? (
+                        <span className="cell-select" style={{ opacity: 0.6 }}>—</span>
+                      ) : r.accessState === "POR_HABILITAR" ? (
                         <button
-                          onClick={() => { setSelected(r.userId); setMsg(null); }}
-                          style={{ background: r.userId === selected ? "var(--brand700)" : "var(--brand600)", color: "#fff", border: "none", borderRadius: 999, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
+                          onClick={() => { setSelected(r.email); setMsg(null); }}
+                          style={{ background: r.email === selected ? "var(--brand700)" : "var(--brand600)", color: "#fff", border: "none", borderRadius: 999, padding: "6px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}
                         >
                           {t("admin.accesos.giveAccess")}
                         </button>
                       ) : (
                         <button
-                          onClick={() => { setSelected(r.userId); setMsg(null); }}
+                          onClick={() => { setSelected(r.email); setMsg(null); }}
                           className="cell-select"
-                          style={{ cursor: "pointer", background: r.userId === selected ? "var(--brand50)" : "transparent", border: "1px solid var(--brand200)" }}
+                          style={{ cursor: "pointer", background: r.email === selected ? "var(--brand50)" : "transparent", border: "1px solid var(--brand200)" }}
                         >
                           {t("admin.edit")}
                         </button>
@@ -160,22 +162,25 @@ export default function AccesosManager({ rows }) {
 
             <button
               onClick={enable}
-              disabled={pending}
+              disabled={pending || !current?.hasAccount}
               style={{
-                background: pending ? "#9ca3af" : "var(--brand600)",
+                background: pending || !current?.hasAccount ? "#9ca3af" : "var(--brand600)",
                 color: "#fff", border: "none", borderRadius: 999, padding: 12, fontSize: 14, fontWeight: 600,
-                cursor: pending ? "default" : "pointer",
+                cursor: pending || !current?.hasAccount ? "default" : "pointer",
               }}
             >
               {pending ? t("admin.accesos.enabling") : current?.accessState === "ACTIVO" ? t("admin.accesos.update") : t("admin.accesos.enable")}
             </button>
 
-            {msg && (
+            {!current?.hasAccount ? (
+              <p style={{ fontSize: 12, textAlign: "center", color: "#a16207", background: "#fef9c3", border: "1px solid #fde68a", borderRadius: 10, padding: "8px 12px" }}>
+                {t("admin.accesos.noAccountHint")}
+              </p>
+            ) : msg ? (
               <p style={{ fontSize: 12, textAlign: "center", color: msg.ok ? "#16a34a" : "var(--danger)" }}>
                 {msg.ok ? t("admin.accesos.okMsg", { name: msg.name, email: msg.email }) : msg.error}
               </p>
-            )}
-            {!msg && (
+            ) : (
               <p style={{ fontSize: 11, color: "#9ca3af", textAlign: "center" }}>
                 {t("admin.accesos.idleNote")}
               </p>

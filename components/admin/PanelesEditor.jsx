@@ -6,7 +6,14 @@ import { TEMPLATES } from "@/lib/templates";
 import { useI18n } from "@/components/I18nProvider";
 
 const PLAN_OPTIONS = ["BASICO", "PRO", "VIP"];
-const EMPTY = { coupleName: "", title: "", date: "", time: "19:00", venue: "", address: "", dressCode: "", plan: "BASICO", templateSlug: TEMPLATES[0].slug, music: "", paymentQr: "", albumUrl: "", totalGuests: 0 };
+// Music repertoire (song titles only) offered in the dropdown.
+const REPERTOIRE = [
+  "Perfect — Ed Sheeran",
+  "A Thousand Years — Christina Perri",
+  "All of Me — John Legend",
+  "Can't Help Falling in Love — Elvis Presley",
+];
+const EMPTY = { coupleName: "", title: "", date: "", time: "19:00", venue: "", address: "", dressCode: "", plan: "BASICO", templateSlug: TEMPLATES[0].slug, music: "", musicUrl: "", paymentQr: "", albumUrl: "", totalGuests: 0 };
 
 // Read an image file and downscale it to a small JPEG data URL (so the QR image
 // fits in the DB without needing a file-storage backend).
@@ -55,7 +62,7 @@ export default function PanelesEditor({ items }) {
       setForm({
         coupleName: e.coupleName, title: e.title, date: e.date, time: e.time, venue: e.venue,
         address: e.address, dressCode: e.dressCode, plan: e.plan,
-        templateSlug: e.templateSlug || TEMPLATES[0].slug, music: e.music,
+        templateSlug: e.templateSlug || TEMPLATES[0].slug, music: e.music, musicUrl: e.musicUrl || "",
         paymentQr: e.paymentQr || "", albumUrl: e.albumUrl || "", totalGuests: e.totalGuests,
       });
     } else {
@@ -103,6 +110,22 @@ export default function PanelesEditor({ items }) {
     imageToDataUrl(file).then((url) => setForm((f) => ({ ...f, paymentQr: url }))).catch(() => {});
   }
 
+  function onPickMusic(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const songName = file.name.replace(/\.[^.]+$/, "");
+    setForm((f) => ({ ...f, music: songName })); // optimistic label
+    start(async () => {
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+        const up = await fetch("/api/upload", { method: "POST", body: fd });
+        const data = await up.json();
+        if (data.ok && data.url) setForm((f) => ({ ...f, music: songName, musicUrl: data.url }));
+      } catch { /* ignore */ }
+    });
+  }
+
   return (
     <div className="admin-accesos" style={{ marginTop: 8 }}>
       {/* Left: user list */}
@@ -132,7 +155,7 @@ export default function PanelesEditor({ items }) {
                     background: i.event ? "#dcfce7" : "#f3f4f6", color: i.event ? "#15803d" : "#6b7280",
                   }}
                 >
-                  {i.event ? t(`admin.plan.${i.event.plan}`) : t("admin.paneles.noPanel")}
+                  {i.event ? t(`admin.plan.${i.event.plan}`) : i.hasAccount ? t("admin.paneles.noPanel") : t("admin.paneles.noAccount")}
                 </span>
               </button>
             );
@@ -142,7 +165,15 @@ export default function PanelesEditor({ items }) {
 
       {/* Right: editor */}
       <div className="admin-card">
-        {!current?.event ? (
+        {current && !current.hasAccount ? (
+          <div>
+            <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>{current.name}</h2>
+            <p style={{ fontSize: 13, color: "#6b7280", marginTop: 4 }}>{current.email}</p>
+            <p style={{ marginTop: 16, fontSize: 13, color: "#a16207", background: "#fef9c3", border: "1px solid #fde68a", borderRadius: 10, padding: "12px 14px" }}>
+              {t("admin.paneles.noAccountHint")}
+            </p>
+          </div>
+        ) : !current?.event ? (
           <div>
             <h2 className="serif" style={{ fontSize: 18, fontWeight: 700, color: "#1c1917" }}>{t("admin.paneles.createTitle", { name: current?.name || "" })}</h2>
             <p style={{ fontSize: 13, color: "#6b7280", marginTop: 4 }}>{t("admin.paneles.createBody")}</p>
@@ -209,7 +240,22 @@ export default function PanelesEditor({ items }) {
               </div>
               <div style={{ gridColumn: "1 / -1" }}>
                 <label className="label">{t("admin.paneles.music")}</label>
-                <input className="input" value={form.music} onChange={set("music")} placeholder={t("admin.paneles.musicPh")} />
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 6, alignItems: "center" }}>
+                  <select
+                    className="select"
+                    style={{ flex: 1, minWidth: 200, marginTop: 0 }}
+                    value={form.music || ""}
+                    onChange={(e) => setForm((f) => ({ ...f, music: e.target.value, musicUrl: "" }))}
+                  >
+                    {form.music && !REPERTOIRE.includes(form.music) && <option value={form.music}>{form.music}</option>}
+                    {REPERTOIRE.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <label className="share-btn" style={{ cursor: "pointer" }}>
+                    {t("admin.paneles.uploadMusic")}
+                    <input type="file" accept="audio/mpeg,.mp3" onChange={onPickMusic} style={{ display: "none" }} />
+                  </label>
+                </div>
+                {form.musicUrl && <audio controls src={form.musicUrl} style={{ height: 34, marginTop: 8, maxWidth: "100%" }} />}
               </div>
               <div style={{ gridColumn: "1 / -1" }}>
                 <label className="label">{t("admin.paneles.paymentQr")}</label>
