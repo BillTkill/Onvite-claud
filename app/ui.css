@@ -6,23 +6,23 @@
 
 .site-header {
   position: sticky;
-  top: 0;
+  top: 14px;
   z-index: 50;
-  background: rgba(251, 248, 243, 0.85);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
 }
 
 .site-header__inner {
-  max-width: 1120px;
+  max-width: 1180px;
   margin: 0 auto;
-  height: 64px;
+  height: 62px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 0 24px;
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 0 12px 0 22px;
+  box-shadow: 0 1px 2px rgba(27, 24, 18, 0.05), 0 12px 30px -18px rgba(27, 24, 18, 0.28);
 }
 
 .brand {
@@ -33,30 +33,30 @@
   flex: none;
 }
 .brand:hover { color: var(--ink); }
-.brand__name { font-size: 18px; font-weight: 600; }
+.brand__name { font-size: 19px; font-weight: 600; }
 
-.site-nav { display: flex; align-items: center; gap: 2px; }
+.site-nav { display: flex; align-items: center; gap: 26px; }
 .site-nav__link {
   color: var(--ink-soft);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 999px;
+  padding: 8px 0;
+  border-radius: 0;
 }
-.site-nav__link:hover { color: var(--ink); background: var(--sand); }
+.site-nav__link:hover { color: var(--ink); background: none; }
 
 .site-header__actions { display: flex; align-items: center; gap: 10px; }
-.auth-links { display: flex; align-items: center; gap: 10px; }
-.btn--sm { padding: 9px 18px; font-size: 14px; }
+.auth-links { display: flex; align-items: center; gap: 6px; }
+.btn--sm { padding: 9px 18px; font-size: 13.5px; }
 
 .nav-toggle {
   display: none;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  border: none;
+  background: var(--sand);
   border-radius: 999px;
   color: var(--ink);
 }
@@ -160,9 +160,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 16px 24px 24px;
-  background: rgba(251, 248, 243, 0.98);
-  border-bottom: 1px solid var(--border);
+  margin: 8px 24px 0;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 24px;
+  box-shadow: 0 1px 2px rgba(27, 24, 18, 0.05), 0 12px 30px -18px rgba(27, 24, 18, 0.28);
 }
 .mobile-nav__link {
   padding: 12px 8px;
@@ -176,33 +178,62 @@
 
 /* ---- Footer ------------------------------------------------------------- */
 
-.site-footer { border-top: 1px solid var(--border); background: var(--bg); }
-.site-footer__inner {
-  padding: 48px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
+.site-footer {
+  max-width: 1300px;
+  margin: 60px auto 0;
+  /* No bottom padding: the gold legal bar below runs to the page edge. */
+  padding: 0 24px;
   text-align: center;
 }
-.site-footer__contacts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.footer-pill {
-  display: inline-flex;
+.footer-logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--ink-soft);
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: 999px;
+  justify-content: center;
+  box-shadow: 0 8px 20px -12px rgba(27, 24, 18, 0.2);
 }
-.footer-pill:hover { color: var(--ink); background: var(--sand); }
-.site-footer__terms {
+.site-footer .fname { font-size: 20px; font-weight: 700; color: var(--ink); }
+.site-footer .ftag { margin-top: 6px; font-size: 13px; color: var(--ink-soft); }
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+  font-size: 13px;
   color: var(--ink-soft);
-  font-size: 12px;
-  text-decoration: underline;
-  text-underline-offset: 4px;
 }
+.footer-links a { color: inherit; display: inline-flex; align-items: center; gap: 6px; }
+.footer-links a:hover { color: var(--ink); }
+.footer-divider { max-width: 1300px; margin: 26px auto 0; border-top: 1px solid var(--border); }
+
+/* Full-bleed gold bar. Same 100vw technique as .testimonios-wrap — safe
+   because body sets overflow-x: hidden. The negative margins cancel the
+   footer's own horizontal padding so the bar truly reaches both edges. */
+.footer-legal-wrap {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  margin-top: 40px;
+}
+.footer-legal-bar {
+  background: var(--gold);
+  padding: 26px 24px 24px;
+  text-align: center;
+}
+.footer-legal { display: flex; align-items: center; justify-content: center; gap: 22px; font-size: 12.5px; }
+.footer-legal a { color: #fff8ec; text-decoration: underline; text-underline-offset: 3px; }
+.footer-legal a:hover { color: #fff; }
+.footer-copy { margin-top: 12px; font-size: 12px; color: rgba(255, 250, 242, 0.8); }
 
 /* ---- Template card ------------------------------------------------------ */
 
@@ -252,12 +283,14 @@
 .tpl-card__name { font-size: 22px; font-weight: 500; }
 .tpl-card__rule { height: 1px; width: 40px; opacity: 0.5; }
 .tpl-card__body { padding: 16px 4px 4px; flex: 1; display: flex; flex-direction: column; }
-.tpl-card__title { font-size: 17px; font-weight: 600; }
+/* Same reference metrics as .tpl-info above, at this card's smaller scale. */
+.tpl-card__title { font-size: 21px; font-weight: 400; line-height: 1.12; letter-spacing: -0.025em; }
 .tpl-card__desc {
   color: var(--ink-soft);
-  margin-top: 4px;
-  font-size: 13px;
-  line-height: 1.5;
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.75;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -266,11 +299,78 @@
 .tpl-card__cta {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   margin-top: 12px;
-  color: var(--gold-deep);
-  font-size: 13px;
-  font-weight: 600;
+  color: var(--gold-accent);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* ---- Site background layer (components/SiteBackground.jsx) --------------
+   Fixed, non-interactive, behind everything. The plain variant is just the
+   white page colour; the "stars" variant adds sparkles + drifting cards and
+   is enabled from the component's VARIANT constant. */
+
+.site-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg);
+  pointer-events: none;
+}
+.site-bg--icons { overflow: hidden; }
+
+/* Hairline gold marks, matching the reference artwork's weight and tint.
+   Kept faint on purpose: this sits behind real copy everywhere. */
+.site-bg__icon {
+  position: absolute;
+  color: rgba(196, 154, 78, 0.42);
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  will-change: transform;
+}
+/* Four drift paths so no two neighbours travel as one block. */
+.site-bg__icon--d1 { animation-name: onvite-float-1; }
+.site-bg__icon--d2 { animation-name: onvite-float-2; }
+.site-bg__icon--d3 { animation-name: onvite-float-3; }
+.site-bg__icon--d4 { animation-name: onvite-float-4; }
+
+@keyframes onvite-float-1 {
+  0%, 100% { transform: translate(0, 0) rotate(var(--icon-rot)); }
+  50% { transform: translate(26px, -34px) rotate(calc(var(--icon-rot) + 9deg)); }
+}
+@keyframes onvite-float-2 {
+  0%, 100% { transform: translate(0, 0) rotate(var(--icon-rot)); }
+  50% { transform: translate(-32px, 24px) rotate(calc(var(--icon-rot) - 8deg)); }
+}
+@keyframes onvite-float-3 {
+  0%, 100% { transform: translate(0, 0) rotate(var(--icon-rot)); }
+  50% { transform: translate(22px, 30px) rotate(calc(var(--icon-rot) + 7deg)); }
+}
+@keyframes onvite-float-4 {
+  0%, 100% { transform: translate(0, 0) rotate(var(--icon-rot)); }
+  50% { transform: translate(-24px, -28px) rotate(calc(var(--icon-rot) - 10deg)); }
+}
+
+.site-bg__glow {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 196, 106, 0.5) 0%, rgba(240, 196, 106, 0) 70%);
+  animation-name: onvite-glow;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+@keyframes onvite-glow {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 0.9; transform: scale(1.1); }
+}
+
+/* Motion is decoration only — the pattern itself still reads when stilled. */
+@media (prefers-reduced-motion: reduce) {
+  .site-bg__icon, .site-bg__glow { animation: none; }
+  .site-bg__icon { transform: rotate(var(--icon-rot)); }
 }
 
 /* ---- Typography helpers + hero ------------------------------------------ */
@@ -282,25 +382,814 @@
 
 [id] { scroll-margin-top: 84px; }
 
-.hero { position: relative; overflow: hidden; padding: 80px 0 72px; text-align: center; }
-.hero__glow {
-  position: absolute;
-  top: -160px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 520px;
-  height: 520px;
-  max-width: 90vw;
-  border-radius: 50%;
-  background: rgba(240, 230, 212, 0.6);
-  filter: blur(80px);
-  z-index: 0;
+.hero { max-width: 900px; margin: 0 auto; text-align: center; padding: 40px 24px 0; }
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 7px 17px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 18px;
 }
-.hero__inner { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; }
+
+/* "Encabezado de sección" — the reusable pill eyebrow (border + ✦ + pill
+   shape) introduced for the hero badge, now reused as the small label above
+   every other section title on the Home page. Always sits on the plain page
+   background (never inside a colored box), so one flat style covers every
+   case — see components/home/SectionEyebrow.jsx. */
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 7px 17px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 0 auto 18px;
+  width: fit-content;
+}
+
+/* Shared subtitle typography — matches .compartir-content's reference style
+   (uppercase, 11px, gold) — applied to every section subtitle per the
+   client's typography-unification request. */
+.section-sub {
+  margin-top: 12px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: var(--sublabel-tracking);
+  line-height: 1.8;
+  text-transform: uppercase;
+  color: var(--gold);
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Two-line editorial headline, metrics matched to the reference:
+   Cormorant Garamond 600, -0.045em tracking, near-solid leading, and the
+   italic gold second line set slightly smaller than the black first line. */
+.hero-headline {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(36px, 6.2vw, 62px);
+  line-height: 1.02;
+  color: var(--ink);
+  letter-spacing: -0.045em;
+}
+.hero-headline__accent {
+  display: block;
+  font-style: italic;
+  font-weight: 600;
+  font-size: 0.85em;
+  color: var(--gold-accent);
+}
+
+/* Uppercase letter-spaced line under the headline (reference: Manrope 300,
+   0.16em tracking, muted ink). */
+.hero-tagline {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: clamp(10.5px, 1.1vw, 12px);
+  letter-spacing: var(--sublabel-tracking);
+  line-height: 1.75;
+  text-transform: uppercase;
+  color: rgba(27, 24, 18, 0.58);
+  max-width: 560px;
+  margin: 18px auto 0;
+}
+
+.hero-lede { max-width: 600px; margin: 18px auto 0; font-size: 16px; line-height: 1.55; color: var(--ink-soft); }
+.hero-ctas { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; margin-top: 26px; }
+.hero-cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ink);
+  color: var(--white, #fff);
+  border: none;
+  border-radius: 999px;
+  padding: 14px 24px;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.hero-cta-primary:hover { color: #fff; }
+.hero-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 14px 24px;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+.hero-cta-secondary:hover { color: var(--ink); }
+.hero-meta { margin-top: 16px; font-size: 12.5px; color: var(--ink-soft); opacity: 0.75; }
 
 @media (max-width: 640px) {
-  .hero { padding: 48px 0 40px; }
+  .hero { padding: 28px 20px 0; }
   .section { padding: 40px 0; }
+}
+
+/* ---- Showcase: infinite marquee rows + centered phone ------------------- */
+
+.showcase { position: relative; max-width: 1400px; margin: 30px auto 0; }
+
+.marquee {
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.marquee-track { display: flex; width: max-content; }
+/* Top row (template cards, behind the phone) drifts left; bottom row
+   (envelopes) drifts right — opposite directions per the client's spec. */
+.row-top .marquee-track { animation: onvite-scroll-left 42s linear infinite; }
+@keyframes onvite-scroll-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.row-bottom { margin-top: 16px; }
+.row-bottom .marquee-track { animation: onvite-scroll-right 38s linear infinite; }
+@keyframes onvite-scroll-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .row-top .marquee-track, .row-bottom .marquee-track { animation: none; }
+}
+
+.invite-card {
+  position: relative;
+  flex-shrink: 0;
+  width: 160px;
+  height: 230px;
+  margin: 0 8px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 14px 26px -16px rgba(27, 24, 18, 0.45);
+}
+.invite-card .grad { position: absolute; inset: 0; }
+.invite-card__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.invite-card .top-bar {
+  position: absolute; top: 10px; left: 0; right: 0;
+  text-align: center; font-size: 5.5px; letter-spacing: 0.14em; font-weight: 700; color: rgba(255, 255, 255, 0.8);
+}
+.invite-card .names {
+  position: absolute; left: 0; right: 0; bottom: 42px;
+  text-align: center; font-family: var(--font-serif); font-style: italic; font-size: 16px; color: #fff;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+.invite-card .date {
+  position: absolute; left: 0; right: 0; bottom: 28px;
+  text-align: center; font-size: 6px; letter-spacing: 0.1em; font-weight: 600; color: rgba(255, 255, 255, 0.8);
+}
+.invite-card .confirm {
+  position: absolute; left: 0; right: 0; bottom: 10px;
+  text-align: center; font-size: 6.5px; letter-spacing: 0.12em; font-weight: 700; color: rgba(255, 255, 255, 0.85);
+}
+.invite-card .dot {
+  position: absolute; top: 9px; right: 9px; width: 16px; height: 16px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 6px; color: rgba(255, 255, 255, 0.7);
+}
+
+.g1 { background: linear-gradient(160deg, #e8c78a 0%, #c07a3e 40%, #6a3820 100%); }
+.g2 { background: linear-gradient(160deg, #a8c8e0, #4f7da0 50%, #1e3d5c); }
+.g3 { background: linear-gradient(160deg, #dfe6ea, #5a7f99 50%, #1a3040); }
+.g4 { background: radial-gradient(circle at 50% 30%, #3a4266, #0f1228 75%); }
+.g5 { background: linear-gradient(160deg, #eef2c8, #8fb35a 55%, #3a5e28); }
+.g6 { background: linear-gradient(160deg, #f0d9c4, #cf8855 55%, #7a4020); }
+.g7 { background: linear-gradient(160deg, #e0c89a, #a87840 55%, #5c3618); }
+.g8 { background: linear-gradient(160deg, #c0d4e2, #5a8aaa 55%, #1a3648); }
+
+.envelope {
+  position: relative;
+  flex-shrink: 0;
+  width: 160px;
+  height: 230px;
+  margin: 0 8px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 20px -12px rgba(27, 24, 18, 0.3);
+}
+.envelope__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.envelope .flap {
+  position: absolute; top: 0; left: 0; right: 0; height: 55%;
+  clip-path: polygon(0 0, 100% 0, 50% 70%);
+  opacity: 0.35; border-radius: 16px 16px 0 0;
+}
+.envelope .seal {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-serif); font-size: 13px; font-weight: 700;
+  box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.18), 0 3px 6px rgba(0, 0, 0, 0.15);
+  z-index: 2; position: relative;
+}
+.envelope .label {
+  position: absolute; bottom: 18px; left: 0; right: 0; text-align: center;
+  font-family: var(--font-serif); font-style: italic; font-size: 11px; color: var(--ink-soft); opacity: 0.6;
+}
+.e1 { background: #f4f0e8; } .e1 .flap { background: #e2dacb; } .e1 .seal { background: radial-gradient(circle at 35% 30%, #dab44f, #a07820); color: #3a2c0d; }
+.e2 { background: #191714; } .e2 .flap { background: #2a2720; } .e2 .seal { background: radial-gradient(circle at 35% 30%, #c9965a, #8a5c28); color: #fff; }
+.e3 { background: #e9e2d3; } .e3 .flap { background: #d6ccb8; } .e3 .seal { background: radial-gradient(circle at 35% 30%, #e2c15c, #a4802c); color: #3a2c0d; }
+.e4 { background: #6e7c57; } .e4 .flap { background: #5a6848; } .e4 .seal { background: radial-gradient(circle at 35% 30%, #d4bfa0, #a08a60); color: #42341a; }
+.e5 { background: #f0d9dc; } .e5 .flap { background: #e0c4c8; } .e5 .seal { background: radial-gradient(circle at 35% 30%, #d99aa2, #b96570); color: #fff; }
+.e6 { background: #efe6d8; } .e6 .flap { background: #ddd2c0; } .e6 .seal { background: radial-gradient(circle at 35% 30%, #d7c8a6, #a9905f); color: #42341a; }
+
+.phone {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 210px; height: 430px;
+  border-radius: 30px;
+  background: #111;
+  padding: 4px;
+  box-shadow: 0 30px 70px -20px rgba(27, 24, 18, 0.6);
+  z-index: 10;
+}
+.phone-screen {
+  width: 100%; height: 100%; border-radius: 27px; overflow: hidden; position: relative;
+  background: linear-gradient(180deg, #8fae7c 0%, #5a8a4a 40%, #3f5a3c 100%);
+}
+.phone-screen__img { object-fit: cover; display: block; }
+.phone-notch {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 60px; height: 16px; border-radius: 12px; background: #111; z-index: 2;
+}
+.phone-screen .label-top {
+  position: absolute; top: 36px; left: 0; right: 0; text-align: center;
+  font-size: 6.5px; letter-spacing: 0.14em; font-weight: 700; color: rgba(255, 255, 255, 0.75);
+}
+.phone-screen .sparkle {
+  position: absolute; top: 52px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; color: var(--gold);
+}
+.phone-screen .names {
+  position: absolute; left: 0; right: 0; bottom: 56px; text-align: center;
+  font-family: var(--font-serif); font-style: italic; font-size: 26px; color: #fff;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+}
+.phone-screen .date {
+  position: absolute; left: 0; right: 0; bottom: 40px; text-align: center;
+  font-size: 7px; letter-spacing: 0.12em; font-weight: 600; color: rgba(255, 255, 255, 0.8);
+}
+.phone-screen .confirm {
+  position: absolute; left: 0; right: 0; bottom: 14px; text-align: center;
+  font-size: 8.5px; letter-spacing: 0.14em; font-weight: 700; color: rgba(255, 255, 255, 0.9);
+}
+.phone-screen .btn-dot {
+  position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%);
+  width: 20px; height: 20px; border-radius: 50%; background: rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 900px) {
+  .phone { width: 160px; height: 330px; }
+  .phone-screen .names { font-size: 19px; bottom: 44px; }
+}
+/* The centered phone stays visible on phones — it is the focal piece of the
+   showcase, and mobile is the primary viewport — but shrinks to about one
+   card width so the marquee rows behind it stay readable. */
+@media (max-width: 600px) {
+  .phone { width: 150px; height: 310px; border-radius: 24px; }
+  .phone-screen { border-radius: 21px; }
+  .phone-screen .names { font-size: 17px; bottom: 40px; }
+}
+
+/* ---- Templates gallery (Home) -------------------------------------------
+   Distinct from the /templates page cards (.tpl-card) — this is the
+   dual-phone-mockup style from the mockup, used only in the Home preview. */
+
+.plantillas-section { max-width: 1240px; margin: 80px auto 0; text-align: center; padding: 0 24px; }
+/* Tracking + leading come from the global h1–h4 rule (the reference metrics),
+   so section titles only set size/weight from here on. */
+.plantillas-section h2 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(28px, 4vw, 40px);
+  color: var(--ink);
+}
+.plantillas-section .sub-desc {
+  margin-top: 12px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: var(--sublabel-tracking);
+  line-height: 1.8;
+  text-transform: uppercase;
+  color: var(--gold);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.plantillas-section .gold-line { width: 50px; height: 3px; border-radius: 2px; background: var(--gold); margin: 16px auto 0; }
+
+.tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 40px; }
+.tpl-item { background: var(--sand); border-radius: 20px; overflow: hidden; text-align: left; box-shadow: 0 2px 12px -6px rgba(27, 24, 18, 0.12); }
+.tpl-preview {
+  position: relative;
+  display: flex;
+  background: linear-gradient(135deg, #f0e8d8, #e8ddc8);
+  padding: 28px 20px 20px;
+  min-height: 320px;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+.badge-best {
+  position: absolute; top: 16px; left: 16px;
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  color: var(--gold);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  z-index: 3;
+}
+.eye-icon {
+  position: absolute; top: 14px; right: 14px;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #7c3a2a;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  z-index: 3;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.phone-mock { border-radius: 18px; overflow: hidden; box-shadow: 0 12px 30px -10px rgba(27, 24, 18, 0.5); position: relative; flex-shrink: 0; }
+.phone-mock-lg { width: 140px; height: 260px; z-index: 2; }
+.phone-mock-sm { width: 120px; height: 230px; z-index: 1; margin-left: -24px; margin-bottom: -8px; }
+.phone-mock .mock-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.phone-mock .mock-screen { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 10px; position: relative; }
+.phone-mock .mock-screen .m-top { position: absolute; top: 8px; left: 0; right: 0; text-align: center; font-size: 5px; letter-spacing: 0.12em; font-weight: 700; opacity: 0.75; }
+.phone-mock .mock-screen .m-names { font-family: var(--font-serif); font-style: italic; font-size: 15px; margin-bottom: 2px; }
+.phone-mock .mock-screen .m-date { font-size: 5px; letter-spacing: 0.1em; font-weight: 600; opacity: 0.8; margin-bottom: 6px; }
+.phone-mock .mock-screen .m-btn { font-size: 5.5px; letter-spacing: 0.12em; font-weight: 700; opacity: 0.9; }
+.phone-mock .mock-screen .m-dots { position: absolute; bottom: 6px; display: flex; gap: 3px; }
+.phone-mock .mock-screen .m-dots span { width: 4px; height: 4px; border-radius: 50%; background: rgba(255, 255, 255, 0.35); }
+.phone-mock .mock-screen .m-dots span.active { background: rgba(255, 255, 255, 0.85); }
+
+/* Card text block — metrics copied from the reference's template card:
+   Playfair 400 title (light, not bold), an extra-bold Manrope catalogue-code
+   label, airy 1.75-leading body, and a 500-weight spaced-out CTA. Shared by
+   the Home gallery (.tpl-info) and the /templates grid (.tpl-card__*). */
+.tpl-code {
+  margin-top: 8px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-accent);
+}
+
+.tpl-info { padding: 20px 22px 22px; background: var(--surface); }
+.tpl-info h3 { font-size: 24px; font-weight: 400; line-height: 1.12; letter-spacing: -0.025em; color: var(--ink); }
+.tpl-info .tpl-desc { margin-top: 10px; font-size: 13px; font-weight: 400; line-height: 1.75; color: var(--ink-soft); }
+.tpl-info .ver-tema {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 14px;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--gold-accent);
+  letter-spacing: 0.12em;
+}
+.tpl-info .ver-tema:hover { color: var(--gold-deep); }
+
+/* Templates gallery on tablets and phones: the reference keeps three columns
+   at every width instead of stacking (two on phones) — the cards shrink, the grid does not
+   reflow. The mock-ups are sized as a percentage of their column so this one
+   rule scales cleanly from 360px phones up to 960px tablets. */
+@media (max-width: 960px) {
+  .tpl-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .tpl-item { border-radius: 12px; }
+  .tpl-preview { padding: 26px 6% 12px; min-height: 0; aspect-ratio: 1 / 1.12; }
+  .phone-mock { border-radius: 10px; }
+  .phone-mock-lg { width: 48%; height: auto; aspect-ratio: 140 / 260; }
+  .phone-mock-sm { width: 42%; height: auto; aspect-ratio: 120 / 230; margin-left: -7%; margin-bottom: -4%; }
+  .badge-best { top: 7px; left: 7px; gap: 3px; padding: 3px 6px; font-size: clamp(6px, 1.7vw, 10px); }
+  .eye-icon { top: 6px; right: 6px; width: clamp(22px, 6.5vw, 36px); height: clamp(22px, 6.5vw, 36px); }
+  .eye-icon svg { width: 52%; height: auto; }
+  .tpl-info { padding: 10px 8px 12px; }
+  .tpl-info h3 { font-size: clamp(15px, 4.4vw, 22px); }
+  .tpl-code { margin-top: 5px; letter-spacing: 0.1em; font-size: clamp(8px, 2.3vw, 10px); }
+}
+/* Below this the column is too narrow for prose: the reference shows only the
+   name and the catalogue id in its three-up grid. */
+@media (max-width: 640px) {
+  .tpl-info .tpl-desc, .tpl-info .ver-tema { display: none; }
+}
+
+/* ---- How it works (Home) -------------------------------------------------
+   Rebuilt from the client's reference: no panel, three free-standing cards
+   on the page background, each carrying its own accent colour (rose / amber
+   / sage) driven by the --acc* custom properties set on .c1–.c3. */
+
+.pasos { max-width: 1180px; margin: 90px auto 0; padding: 0 24px; text-align: center; }
+.pasos-inner { position: relative; }
+
+/* One shared palette for the whole section (previously three per-step
+   colours). --gold-metal is the polished-metal gradient: the light/dark
+   stops are what read as a curved 3D surface, and the inset shadows on each
+   element below supply the highlight and the shaded underside. */
+.pasos {
+  --acc: #c9a227;
+  --acc-deep: #8a6a1c;
+  --gold-metal: linear-gradient(140deg,
+    #fdf3d0 0%, #e8c96a 17%, #c9a227 36%,
+    #a8801c 54%, #e3c264 72%, #f7e9b8 86%, #b8902a 100%);
+}
+
+.pasos-title { margin-top: 16px; font-size: clamp(28px, 4.4vw, 46px); font-weight: 500; color: var(--ink); }
+/* Same accent as the hero's italic second line (.hero-headline__accent). */
+.pasos-title em { font-style: italic; color: var(--gold-accent); }
+
+.pasos-sub {
+  margin-top: 14px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+.pasos-sub strong { font-weight: 700; color: var(--gold-accent); }
+
+.pasos-rule { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 22px; }
+.pasos-rule .line { width: 62px; height: 1px; background: linear-gradient(90deg, transparent, #e0cd97, transparent); }
+.pasos-rule .heart { font-size: 13px; color: var(--acc); }
+
+/* ---- How it works: minimalist vertical timeline --------------------------
+   A single hairline runs down the left edge, linking one medallion per step.
+   The same structure serves desktop and phones — only the scale changes — so
+   every step stays readable on mobile instead of collapsing into cards. */
+.pasos-timeline {
+  list-style: none;
+  max-width: 640px;
+  margin: 40px auto 0;
+  text-align: left;
+}
+.paso-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 46px 1fr;
+  gap: 20px;
+  padding-bottom: 30px;
+}
+.paso-step:last-child { padding-bottom: 0; }
+/* Drawn per step rather than as one long rule, so it stops cleanly at the
+   last medallion instead of trailing past it. */
+.paso-step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 23px;
+  top: 46px;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg, var(--gold-soft), rgba(27, 24, 18, 0.07));
+}
+.paso-bullet {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--gold-soft);
+  background: var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--acc-deep);
+  box-shadow: 0 1px 3px rgba(27, 24, 18, 0.05);
+}
+.paso-bullet svg { width: 21px; height: 21px; }
+.paso-body h3 {
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.paso-body p {
+  margin-top: 7px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 640px) {
+  .pasos-timeline { margin-top: 30px; }
+  .paso-step { grid-template-columns: 38px 1fr; gap: 14px; padding-bottom: 24px; }
+  .paso-step:not(:last-child)::before { left: 19px; top: 38px; }
+  .paso-bullet { width: 38px; height: 38px; }
+  .paso-bullet svg { width: 17px; height: 17px; }
+  .paso-body h3 { font-size: 17px; }
+  .paso-body p { margin-top: 5px; font-size: 13.5px; line-height: 1.6; }
+}
+
+/* ---- Pricing (Home) ------------------------------------------------------ */
+
+.precios-section { max-width: 1100px; margin: 90px auto 0; text-align: center; padding: 0 24px; }
+.precios-section h2 { font-size: clamp(26px, 3.5vw, 38px); font-weight: 600; color: var(--ink); }
+.precios-section .precios-sub { font-family: var(--font-sans); font-size: 13px; font-weight: 500; letter-spacing: var(--sublabel-tracking); line-height: 1.8; text-transform: uppercase; color: var(--gold); max-width: 620px; margin: 12px auto 0; }
+
+.planes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 44px; align-items: stretch; }
+.plan-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 32px 26px 28px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+}
+.plan-card.destacado { border: 2px solid var(--gold); box-shadow: 0 20px 40px -24px rgba(156, 122, 60, 0.35); }
+.plan-badge {
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  background: var(--gold);
+  color: #fff;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  padding: 6px 16px; border-radius: 999px;
+  white-space: nowrap;
+}
+.plan-badge.vip { background: var(--ink); }
+.plan-name { font-family: var(--font-serif); font-weight: 700; font-size: 23px; color: var(--ink); }
+.plan-tagline { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+.plan-price { display: flex; align-items: baseline; gap: 6px; margin-top: 20px; }
+.plan-price .amount { font-family: var(--font-serif); font-weight: 700; font-size: 38px; color: var(--ink); }
+.plan-price .period { font-size: 13px; color: var(--ink-soft); }
+.plan-features { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-direction: column; gap: 11px; flex-grow: 1; }
+.plan-features li { display: flex; align-items: flex-start; gap: 8px; font-size: 13.5px; color: var(--ink-soft); }
+.plan-features li .check { flex-shrink: 0; margin-top: 2px; }
+.plan-cta {
+  display: block;
+  text-align: center;
+  margin-top: 26px;
+  width: 100%;
+  border-radius: 999px;
+  padding: 13px 20px;
+  font-size: 14px; font-weight: 700;
+  border: 1px solid var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+}
+.plan-cta:hover { color: var(--ink); }
+.plan-cta.solid { background: var(--gold); color: #fff; border: none; }
+.plan-cta.solid:hover { color: #fff; }
+.plan-cta.dark { background: var(--ink); color: #fff; border: none; }
+.plan-cta.dark:hover { color: #fff; }
+
+@media (max-width: 900px) {
+  .planes-grid { grid-template-columns: 1fr; max-width: 400px; margin-left: auto; margin-right: auto; }
+}
+
+/* ---- Comparison table (Home) ---------------------------------------------
+   New section — not present before this visual pass. */
+
+.comparativa-section { max-width: 1100px; margin: 70px auto 0; padding: 0 24px 20px; text-align: center; }
+.comparativa-section h3 { font-size: clamp(22px, 3vw, 30px); font-style: normal; font-weight: 600; text-align: center; color: var(--ink); margin-bottom: 8px; }
+.comparativa-section .comp-sub { text-align: center; font-family: var(--font-sans); font-size: 13px; font-weight: 500; letter-spacing: var(--sublabel-tracking); line-height: 1.8; text-transform: uppercase; color: var(--gold); max-width: 620px; margin: 0 auto 30px; }
+
+.comp-table-wrap {
+  background: var(--surface);
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px -34px rgba(27, 24, 18, 0.3);
+}
+table.comp-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.comp-table thead th {
+  background: var(--sand);
+  padding: 18px 14px;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+table.comp-table thead th:first-child {
+  text-align: left; padding-left: 24px;
+  font-family: var(--font-sans); font-weight: 700; font-size: 12px; letter-spacing: 0.06em; color: var(--ink-soft);
+}
+table.comp-table thead th:nth-child(3) { background: linear-gradient(180deg, rgba(156, 122, 60, 0.14), rgba(156, 122, 60, 0.06)); }
+table.comp-table thead th .col-price { display: block; font-size: 12px; font-family: var(--font-sans); font-weight: 700; color: var(--gold); margin-top: 4px; }
+table.comp-table td { padding: 13px 14px; text-align: center; color: var(--ink-soft); border-bottom: 1px solid var(--border); white-space: nowrap; }
+table.comp-table td:first-child { text-align: left; padding-left: 24px; font-weight: 600; color: var(--ink); white-space: normal; }
+table.comp-table tbody tr:last-child td { border-bottom: none; }
+table.comp-table tbody tr:nth-child(even) { background: rgba(156, 122, 60, 0.04); }
+table.comp-table .yes { color: var(--gold); font-weight: 700; }
+table.comp-table .no { color: #c9c2b4; }
+
+@media (max-width: 760px) {
+  table.comp-table { font-size: 11.5px; }
+  table.comp-table td, table.comp-table thead th { padding: 10px 8px; }
+}
+
+/* ---- Share section (Home) ------------------------------------------------
+   New section — real scannable QR of the current origin. */
+
+.compartir-section { max-width: 980px; margin: 90px auto 0; text-align: center; padding: 0 24px; }
+.compartir-section h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 600; color: var(--ink); }
+.compartir-section .compartir-sub {
+  margin-top: 12px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: var(--sublabel-tracking);
+  line-height: 1.8;
+  text-transform: uppercase;
+  color: var(--gold);
+  max-width: 620px;
+  margin-left: auto; margin-right: auto;
+}
+.compartir-card {
+  margin-top: 36px;
+  background: var(--surface);
+  border-radius: 24px;
+  padding: 34px;
+  display: flex;
+  align-items: center;
+  gap: 38px;
+  text-align: left;
+  box-shadow: 0 24px 50px -34px rgba(27, 24, 18, 0.3);
+}
+.qr-box {
+  flex-shrink: 0;
+  width: 220px; height: 220px;
+  border-radius: 16px;
+  background: var(--sand);
+  padding: 14px;
+  position: relative;
+}
+.qr-box img { border-radius: 6px; }
+.qr-logo {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--ink);
+  display: flex; align-items: center; justify-content: center;
+  border: 3px solid var(--surface);
+}
+.compartir-content h3 { font-family: var(--font-serif); font-weight: 600; font-size: 20px; color: var(--ink); line-height: 1.35; }
+.compartir-content p { margin-top: 12px; font-size: 14px; line-height: 1.6; color: var(--ink-soft); max-width: 460px; }
+.link-row {
+  display: flex; align-items: center; gap: 0;
+  margin-top: 20px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 5px 5px 18px;
+  max-width: 460px;
+}
+.link-row .link-text { flex-grow: 1; font-size: 13px; color: var(--ink-soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.link-row button { background: var(--ink); color: #fff; border: none; border-radius: 999px; padding: 10px 18px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; white-space: nowrap; }
+.link-row button:hover { color: #fff; }
+.share-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.share-chip {
+  display: inline-block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink-soft);
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.share-chip:hover { border-color: var(--gold); color: var(--gold); }
+
+@media (max-width: 760px) {
+  .compartir-card { flex-direction: column; }
+  .qr-box { width: 180px; height: 180px; }
+  .compartir-content { text-align: center; }
+  .compartir-content p { margin-left: auto; margin-right: auto; }
+  .link-row { margin-left: auto; margin-right: auto; }
+  .share-btns { justify-content: center; }
+}
+
+/* ---- Testimonials (Home) --------------------------------------------------
+   New section — full-bleed gold band (see body { overflow-x: hidden } above,
+   which guards this 100vw trick from ever causing horizontal page scroll). */
+
+.testimonios-eyebrow-wrap { text-align: center; margin: 90px auto 0; }
+.testimonios-wrap {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  margin-top: 18px;
+}
+.testimonios-section {
+  background: var(--gold);
+  padding: 56px 40px 50px;
+  text-align: center;
+  overflow: hidden;
+}
+.testimonios-section h2 { font-size: clamp(24px, 3vw, 32px); font-weight: 600; color: #fff8ec; }
+.testimonios-section .testi-sub { margin-top: 8px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; letter-spacing: var(--sublabel-tracking); line-height: 1.8; color: rgba(255, 250, 242, 0.85); }
+
+.testi-rating { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 28px; }
+.testi-rating .score { font-family: var(--font-serif); font-weight: 700; font-size: 34px; color: #fff8ec; }
+.testi-rating .stars-block { text-align: left; }
+.testi-rating .stars { color: #3a2c10; letter-spacing: 2px; font-size: 14px; }
+.testi-rating .count { font-size: 11px; color: rgba(255, 248, 236, 0.75); margin-top: 2px; }
+
+.testi-inner { max-width: 1300px; margin: 0 auto; }
+.testi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 36px; text-align: left; }
+.testi-card { position: relative; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 16px; padding: 22px 20px; }
+.testi-card .stars { color: #fff2cf; font-size: 12px; letter-spacing: 2px; }
+.testi-card .fb-icon { position: absolute; top: 20px; right: 18px; width: 22px; height: 22px; border-radius: 6px; background: #1877f2; display: flex; align-items: center; justify-content: center; }
+.testi-card .fb-icon svg { width: 12px; height: 12px; fill: #fff; }
+.testi-card p { margin-top: 12px; font-family: var(--font-serif); font-style: italic; font-size: 13.5px; line-height: 1.55; color: #fdf7ea; padding-right: 20px; }
+.testi-card .author { margin-top: 16px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.03em; color: #fff8ec; }
+.testi-card .loc { font-size: 10.5px; color: rgba(255, 248, 236, 0.7); margin-top: 2px; }
+
+/* Below the desktop grid the eight testimonials become a horizontal,
+   snap-scrolling carousel: three per column, the rest parked to the side.
+   grid-auto-flow: column does the chunking, so the markup stays a flat list
+   and no JS is involved — the swipe is the browser's own scrolling. */
+@media (max-width: 980px) {
+  .testi-grid {
+    grid-template-columns: none;
+    grid-template-rows: repeat(3, auto);
+    grid-auto-flow: column;
+    grid-auto-columns: 48%;
+    gap: 14px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 0;
+    padding-bottom: 14px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 248, 236, 0.45) transparent;
+  }
+  .testi-card { scroll-snap-align: start; }
+  .testi-grid::-webkit-scrollbar { height: 5px; }
+  .testi-grid::-webkit-scrollbar-thumb { background: rgba(255, 248, 236, 0.45); border-radius: 3px; }
+  .testi-grid::-webkit-scrollbar-track { background: transparent; }
+}
+@media (max-width: 600px) {
+  .testimonios-section { padding: 40px 22px; }
+  /* One column at a time, with the next one peeking so the swipe is
+     discoverable without adding arrows or dots. */
+  .testi-grid { grid-auto-columns: 88%; }
+}
+
+/* ---- Contact section (Home) ----------------------------------------------- */
+
+.contact-wrap { max-width: 1300px; margin: 90px auto 0; padding: 0 24px; }
+.contact-section { display: flex; align-items: center; gap: 60px; padding: 50px 10px; }
+.contact-left { flex-shrink: 0; width: 230px; text-align: center; }
+.contact-logo {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 20px 40px -24px rgba(27, 24, 18, 0.25);
+}
+.contact-left p { font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-soft); line-height: 1.6; text-transform: uppercase; }
+.contact-right { flex-grow: 1; text-align: center; }
+.contact-right h2 { font-size: clamp(24px, 3vw, 34px); font-weight: 500; color: var(--ink); line-height: 1.25; }
+.contact-right .contact-sub { margin-top: 10px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; color: var(--ink-soft); opacity: 0.75; }
+.contact-icons { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 22px; }
+.contact-icons a { width: 44px; height: 44px; border-radius: 12px; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; }
+.contact-icons a:hover { color: #fff; }
+.contact-links { display: flex; align-items: center; justify-content: center; gap: 22px; flex-wrap: wrap; margin-top: 16px; font-size: 13.5px; }
+.contact-links a { color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; }
+.contact-cta {
+  display: inline-block;
+  margin-top: 26px;
+  background: var(--ink);
+  color: var(--gold-accent);
+  border: none;
+  border-radius: 999px;
+  padding: 15px 30px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.contact-cta:hover { color: var(--gold-accent); }
+
+@media (max-width: 820px) {
+  .contact-section { flex-direction: column; gap: 30px; text-align: center; }
+  .contact-left { width: auto; }
 }
 
 /* ---- FAQ (accordion) ---------------------------------------------------- */
@@ -475,21 +1364,404 @@
 .chip:hover { border-color: var(--gold); color: var(--gold-deep); }
 .chip--active { border-color: var(--gold); background: var(--gold-soft); color: var(--gold-deep); }
 
-/* ---- Template detail layout --------------------------------------------- */
+/* ---- Template detail page (/templates/[slug]) ----------------------------
+   Every template dresses its own page: the admin uploads an ambient
+   background and picks DARK or LIGHT (see /admin/plantillas), because the
+   catalogue mixes moods — a sunset beach wedding and a pastel birthday should
+   not share one treatment. Both themes drive the same tokens below, so the
+   markup never has to branch on theme. */
+.tplp {
+  --p-ink: #fdf6ea;
+  --p-ink-soft: rgba(253, 246, 234, 0.72);
+  --p-panel: rgba(16, 13, 24, 0.72);
+  --p-line: rgba(214, 178, 106, 0.32);
+  --p-gold: #d9b46a;
+  --p-ground: #100d18;
+  /* Levelling knobs for the ambient background: raise --p-blur to soften it,
+     raise the veil alphas to darken it. Both themes read the same names. */
+  --p-blur: 3px;
+  --p-veil-top: 0.5;
+  --p-veil-bottom: 0.74;
+  position: relative;
+  min-height: 100vh;
+  isolation: isolate;
+  background: var(--p-ground);
+  color: var(--p-ink);
+  overflow: hidden;
+}
+.tplp--light {
+  --p-ink: #241f18;
+  --p-ink-soft: rgba(36, 31, 24, 0.68);
+  --p-panel: rgba(255, 253, 249, 0.82);
+  --p-line: rgba(156, 122, 60, 0.28);
+  --p-gold: #8a6a1c;
+  --p-ground: #f6f1e8;
+  --p-veil-top: 0.58;
+  --p-veil-bottom: 0.8;
+}
 
-.tpl-detail {
+/* The uploaded background is atmosphere, not content: blurred and dimmed so
+   the panel text keeps its contrast whatever image the admin picks. */
+.tplp__bg {
+  /* Fixed, not absolute: the section starts below the sticky header, so an
+     absolute layer left a white strip of page background above it. Anchoring
+     to the viewport lets the artwork run edge to edge behind the header. */
+  position: fixed; inset: -24px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(var(--p-blur)) saturate(1.05);
+  transform: scale(1.02);
+  z-index: -2;
+}
+.tplp__veil {
+  position: fixed; inset: 0;
+  background: linear-gradient(180deg,
+    rgba(16, 13, 24, var(--p-veil-top)), rgba(16, 13, 24, var(--p-veil-bottom)));
+  z-index: -1;
+}
+.tplp--light .tplp__veil {
+  background: linear-gradient(180deg,
+    rgba(246, 241, 232, var(--p-veil-top)), rgba(246, 241, 232, var(--p-veil-bottom)));
+}
+
+.tplp__inner { max-width: 1240px; margin: 0 auto; padding: 26px 24px 80px; }
+.tplp__back {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 500;
+  color: var(--p-ink-soft);
+}
+.tplp__back:hover { color: var(--p-gold); }
+
+.tplp__grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
-  margin-top: 32px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 34px;
+  margin-top: 20px;
   align-items: start;
 }
-.tpl-detail__poster-wrap { max-width: 380px; margin: 0 auto; width: 100%; }
-.tpl-detail__poster { position: relative; aspect-ratio: 9 / 16; border-radius: 12px; overflow: hidden; }
 
-@media (max-width: 820px) {
-  .tpl-detail { grid-template-columns: 1fr; gap: 32px; }
+/* ---- Left column: thumbnail strip + stage ---- */
+.tplp__left { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 16px; align-items: start; }
+.tplp__strip { display: grid; gap: 12px; }
+.tplp__thumb {
+  position: relative;
+  width: 100%; aspect-ratio: 9 / 16;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--p-line);
+  background: transparent;
+  padding: 0; cursor: pointer;
+  opacity: 0.72;
+  transition: opacity 0.18s ease, border-color 0.18s ease;
 }
+.tplp__thumb:hover { opacity: 1; }
+.tplp__thumb.is-active { opacity: 1; border-color: var(--p-gold); }
+.tplp__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tplp__thumb-check {
+  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--p-gold); color: #1b1508;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.tplp__stage { display: grid; gap: 14px; }
+.tplp__frame {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--p-line);
+  box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.65);
+  /* Wider and shorter than a phone screen: the mock-up gives the poster
+     presence rather than letting it tower over the panel beside it. */
+  aspect-ratio: 9 / 12.4;
+}
+.tplp__poster-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tplp__poster-fallback {
+  position: relative;
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+}
+.tplp__poster-rule { position: absolute; inset: 14px; border: 1px solid; opacity: 0.4; border-radius: 8px; }
+.tplp__poster-brand { font-size: 11px; font-weight: 600; letter-spacing: 0.35em; text-transform: uppercase; opacity: 0.75; }
+.tplp__poster-name { font-size: 28px; font-weight: 500; }
+.tplp__poster-dash { height: 1px; width: 48px; opacity: 0.5; }
+
+.tplp__expand {
+  position: absolute; top: 12px; right: 12px; z-index: 2;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--p-line);
+  background: rgba(16, 13, 24, 0.55);
+  color: #fdf6ea;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.tplp__demo {
+  position: absolute; left: 50%; bottom: 18px; transform: translateX(-50%); z-index: 2;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 20px; border-radius: 999px;
+  border: 1px solid var(--p-line);
+  background: rgba(16, 13, 24, 0.66);
+  color: #fdf6ea;
+  font-size: 11.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  cursor: pointer; white-space: nowrap;
+}
+.tplp__demo:hover, .tplp__expand:hover { border-color: var(--p-gold); }
+
+
+/* ---- Right column: information panel ---- */
+.tplp__panel {
+  position: relative;
+  /* Clips the corner flourish that bleeds past the edge. Safe for the CTA
+     sprigs: they stop ~11px short of the panel border. */
+  overflow: hidden;
+  border: 1px solid var(--p-line);
+  border-radius: 22px;
+  background: var(--p-panel);
+  padding: 30px 30px 28px;
+}
+.tplp__best {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--p-gold);
+}
+.tplp__title { margin-top: 10px; font-size: clamp(34px, 4.6vw, 54px); font-weight: 500; line-height: 1.04; color: var(--p-ink); }
+.tplp__desc { margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--p-ink-soft); max-width: 46ch; }
+.tplp__divider { display: flex; align-items: center; gap: 10px; margin: 20px 0 22px; }
+.tplp__divider .line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--p-line), transparent); }
+.tplp__divider-orn { width: 76px; height: 18px; flex-shrink: 0; color: var(--p-gold); }
+
+.tplp__meta { margin-bottom: 18px; }
+.tplp__meta-label {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10.5px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--p-gold);
+}
+.tplp__glyph { width: 13px; height: 13px; flex-shrink: 0; }
+.tplp__meta-value { margin-top: 6px; display: flex; align-items: center; gap: 7px; font-size: 15px; color: var(--p-ink); }
+
+.tplp__pills { margin-top: 9px; display: flex; flex-wrap: wrap; gap: 8px; }
+.tplp__pill {
+  padding: 8px 16px; border-radius: 999px;
+  border: 1px solid var(--p-line);
+  font-size: 13px; color: var(--p-ink);
+}
+/* The first style is the template's dominant one, so it reads as selected. */
+.tplp__pill.is-lead { background: var(--p-gold); border-color: var(--p-gold); color: #1b1508; font-weight: 600; }
+
+/* Watermark, not content: low opacity and bled off the corner so it never
+   competes with the text beside it. */
+.tplp__filigree {
+  position: absolute; top: -16px; right: -16px;
+  width: 152px; height: 152px;
+  color: var(--p-gold);
+  opacity: 0.13;
+  pointer-events: none;
+}
+.tplp__swatches { margin-top: 9px; display: flex; gap: 10px; }
+.tplp__swatch { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--p-line); }
+
+/* Five across in one row, divided by hairlines — the mock-up treats this as a
+   spec strip, not a list. The rule is drawn on each item bar the first, so it
+   never leaves a stray line at either end. */
+.tplp__includes { margin-top: 12px; display: grid; grid-template-columns: repeat(5, 1fr); }
+.tplp__include {
+  display: flex; align-items: center; gap: 7px;
+  padding: 2px 9px;
+  color: var(--p-gold);
+  border-left: 1px solid var(--p-line);
+}
+.tplp__include:first-child { border-left: 0; padding-left: 0; }
+.tplp__include span { font-size: 11px; line-height: 1.3; color: var(--p-ink-soft); }
+
+.tplp__cta {
+  position: relative;
+  margin-top: 26px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 19px 46px; border-radius: 14px;
+  border: 1px solid var(--p-gold);
+  background: linear-gradient(180deg, rgba(217, 180, 106, 0.16), rgba(217, 180, 106, 0.06));
+  color: var(--p-ink);
+  font-family: var(--font-serif);
+  font-size: 20px;
+}
+/* Second hairline just inside the border — the mock-up frames the button
+   twice, which is what makes it read as engraved rather than as a plain box. */
+.tplp__cta::before {
+  content: "";
+  position: absolute; inset: 5px;
+  border: 1px solid var(--p-line);
+  border-radius: 10px;
+  pointer-events: none;
+}
+.tplp__cta-text { display: inline-flex; align-items: center; gap: 10px; }
+/* The sprigs sit astride the frame, so they must not be clipped by it. */
+.tplp__cta-orn {
+  position: absolute; top: 50%;
+  width: 54px; height: 32px;
+  color: var(--p-gold);
+  pointer-events: none;
+}
+.tplp__cta-orn--left { left: -19px; transform: translateY(-50%); }
+.tplp__cta-orn--right { right: -19px; transform: translateY(-50%) scaleX(-1); }
+.tplp__cta:hover { background: var(--p-gold); color: #1b1508; }
+
+
+
+/* ---- Template detail: closing contact block ------------------------------
+   Deliberately not the Home's contact card: that one is a two-column panel
+   with the seal on the left. Here the page already carries its own artwork,
+   so this is a quiet centred close that borrows the page's theme tokens and
+   lets the brand colours of the channels do the talking. */
+.tplc {
+  max-width: 720px;
+  margin: 74px auto 0;
+  text-align: center;
+}
+.tplc__eyebrow {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--p-gold);
+}
+.tplc__title {
+  margin-top: 10px;
+  font-size: clamp(26px, 3.4vw, 38px);
+  font-weight: 500;
+  line-height: 1.1;
+  color: var(--p-ink);
+}
+.tplc__sub {
+  margin: 12px auto 0;
+  max-width: 52ch;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--p-ink-soft);
+}
+
+.tplc__rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 22px 0 24px;
+}
+.tplc__rule span {
+  width: 72px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--p-line), transparent);
+}
+.tplc__rule em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--p-gold);
+}
+
+.tplc__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+/* Outlined by default, filled with the channel's own colour on hover — the
+   brand reads at a glance without three saturated blocks competing with the
+   poster above. */
+.tplc__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 24px;
+  border-radius: 999px;
+  border: 1px solid var(--p-line);
+  background: var(--p-panel);
+  color: var(--p-ink);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.tplc__link svg { color: var(--brand, var(--p-gold)); transition: color 0.18s ease; }
+.tplc__link:hover { background: var(--brand); border-color: var(--brand); color: #fff; }
+.tplc__link:hover svg { color: #fff; }
+
+.tplc__link--whatsapp { --brand: #25d366; }
+.tplc__link--instagram { --brand: #e1306c; }
+/* TikTok's mark is black on light and white on dark, so it follows the ink. */
+.tplc__link--tiktok { --brand: #1b1812; }
+.tplc--dark .tplc__link--tiktok,
+.tplp:not(.tplp--light) .tplc__link--tiktok { --brand: #2b2620; }
+
+@media (max-width: 640px) {
+  .tplc { margin-top: 52px; }
+  .tplc__rule { margin: 18px 0 20px; }
+  .tplc__rule span { width: 48px; }
+  .tplc__sub { font-size: 13.5px; }
+  /* Full-width rows on a phone: three pills wrapping mid-word looks accidental. */
+  .tplc__links { flex-direction: column; align-items: stretch; gap: 10px; }
+  .tplc__link { justify-content: center; padding: 14px 18px; }
+}
+
+/* ---- Site footer over a template page ----------------------------------
+   The footer was designed for the white body background: transparent, with
+   dark ink. Over a template page it hangs above the fixed artwork, where that
+   ink disappears. Here it is reduced to the seal — the wordmark, tagline and
+   contact row would need re-colouring for both themes, and the block below
+   already repeats those channels. The legal bar keeps its own gold band, so
+   it stays readable and the required links are never hidden. */
+/* The section above is positioned, so it and its fixed artwork paint after a
+   static footer — the seal ended up behind the veil. Positioning the footer
+   puts it back on top. (The legal bar already escaped this: its full-bleed
+   wrapper is positioned too, which is why only that strip stayed visible.) */
+body.tplp-page .site-footer { position: relative; z-index: 1; padding-bottom: 0; }
+body.tplp-page .site-footer .fname,
+body.tplp-page .site-footer .ftag,
+body.tplp-page .site-footer .footer-links { display: none; }
+body.tplp-page .footer-logo { margin-bottom: 26px; }
+
+/* ---- Zoom overlay ---- */
+.tplp__zoom {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(10, 8, 14, 0.92);
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px;
+}
+.tplp__zoom img { max-width: 100%; max-height: 100%; border-radius: 14px; }
+.tplp__zoom-close {
+  position: absolute; top: 18px; right: 20px;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3); background: transparent; color: #fff;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+
+@media (max-width: 1040px) {
+  .tplp__grid { grid-template-columns: 1fr; gap: 26px; }
+}
+@media (max-width: 640px) {
+  .tplp__inner { padding: 18px 16px 60px; }
+  /* The strip moves under the stage and scrolls sideways: four portrait
+     thumbnails beside a poster do not fit a phone. */
+  .tplp__left { grid-template-columns: 1fr; gap: 12px; }
+  .tplp__strip {
+    grid-auto-flow: column;
+    grid-auto-columns: 68px;
+    overflow-x: auto;
+    order: 2;
+    padding-bottom: 4px;
+  }
+  .tplp__stage { order: 1; }
+  .tplp__panel { padding: 22px 18px 20px; border-radius: 18px; }
+  .tplp__title { font-size: clamp(28px, 8.5vw, 40px); }
+  .tplp__cta { font-size: 17px; padding: 16px 34px; }
+  .tplp__cta-orn { width: 40px; height: 24px; }
+  .tplp__cta-orn--left { left: -13px; }
+  .tplp__cta-orn--right { right: -13px; }
+  .tplp__swatch { width: 32px; height: 32px; }
+  /* Five columns cannot hold readable labels on a phone: two columns, and the
+     dividers go — a grid gap separates them more clearly at this size. */
+  .tplp__includes { grid-template-columns: repeat(2, 1fr); gap: 11px 8px; }
+  .tplp__include { border-left: 0; padding: 0; }
+  .tplp__divider-orn { width: 64px; height: 15px; }
+}
+
 
 /* ---- Panel grids + share buttons ---------------------------------------- */
 
@@ -566,6 +1838,95 @@
 
 .admin-card { border: 1px solid #e5e7eb; background: #fff; border-radius: 16px; padding: 24px; }
 .admin-card__title { font-size: 18px; font-weight: 700; color: #1c1917; margin-bottom: 16px; }
+.admin-card__hint { font-size: 13px; color: #6b7280; margin: -10px 0 18px; }
+
+/* ---- Admin · Inicio (Home showcase media + gallery picker) -------------- */
+.home-media-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.home-media-grid--single { grid-template-columns: minmax(160px, 240px); }
+.home-media-slot { border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px; text-align: center; }
+.home-media-slot__preview {
+  aspect-ratio: 3 / 4;
+  border-radius: 8px;
+  background: #f3f4f6;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.home-media-slot__preview img { width: 100%; height: 100%; object-fit: cover; }
+.home-media-slot__placeholder { font-size: 12px; color: #9ca3af; }
+.home-media-slot__actions { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+
+.home-gallery-picker { display: grid; gap: 10px; }
+.home-gallery-picker__row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+.home-gallery-picker__swatch { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; }
+.home-gallery-picker__name { flex: 1; font-size: 14px; font-weight: 600; color: #1c1917; }
+.home-gallery-picker__check { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: #4b5563; white-space: nowrap; }
+
+/* ---- Admin · template detail pages (/admin/plantillas) -------------------
+   One card per catalogue template: the ambient background sits on its own
+   wide slot, the poster and the four strip shots share the portrait row. */
+.tpl-admin { display: grid; gap: 18px; margin-top: 8px; }
+.tpl-admin__bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.tpl-admin__msg { font-size: 13px; font-weight: 600; }
+.tpl-admin__catalog { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--gold-deep); }
+.tpl-admin-card { padding: 16px 18px; }
+.tpl-admin-card__head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.tpl-admin-card__swatch { width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0; }
+.tpl-admin-card__name { display: flex; align-items: baseline; gap: 8px; margin-right: auto; }
+.tpl-admin-card__name strong { font-size: 15px; color: var(--ink); }
+.tpl-admin-card__name small { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--gold-accent); }
+.tpl-admin-card__theme { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-soft); }
+.tpl-admin-card__theme select { border: 1px solid #e5e7eb; border-radius: 8px; padding: 5px 8px; font-size: 12px; background: #fff; }
+.tpl-admin-card__blur { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft); }
+.tpl-admin-card__blur input[type="range"] { width: 108px; accent-color: var(--gold); }
+/* Fixed width so the row does not jog as the number changes width. */
+.tpl-admin-card__blur-val { min-width: 34px; font-variant-numeric: tabular-nums; font-weight: 600; color: var(--gold-deep); }
+
+.tpl-admin-card__slots { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-start; }
+.tpl-admin-slot { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 88px; }
+.tpl-admin-slot--wide { width: 150px; }
+.tpl-admin-slot__label { font-size: 10.5px; letter-spacing: 0.04em; color: var(--ink-soft); text-align: center; }
+.tpl-admin-slot__box {
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border: 1px dashed #d8d3c8;
+  border-radius: 10px;
+  background: #faf8f4;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  color: #b3aa99; font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+}
+/* The background is landscape — the only slot that is not portrait. */
+.tpl-admin-slot--wide .tpl-admin-slot__box { aspect-ratio: 16 / 9; }
+.tpl-admin-slot__box:hover:not(:disabled) { border-color: var(--gold-accent); background: #fff; }
+.tpl-admin-slot__box:disabled { opacity: 0.6; cursor: default; }
+.tpl-admin-slot__box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+@media (max-width: 640px) {
+  .tpl-admin-slot { width: 72px; }
+  .tpl-admin-slot--wide { width: 100%; }
+}
+/* The two mock-up image slots on a featured-gallery row. */
+.home-gallery-picker__imgs { display: inline-flex; gap: 6px; }
+.home-gallery-picker__img {
+  width: 34px; height: 46px;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  padding: 0;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; line-height: 1.1; color: #9ca3af; text-align: center;
+}
+.home-gallery-picker__img:hover { border-color: var(--gold); color: var(--gold); }
+.home-gallery-picker__img img { width: 100%; height: 100%; object-fit: cover; }
+.home-gallery-picker__img:disabled { opacity: 0.6; }
+
+@media (max-width: 760px) {
+  .home-media-grid { grid-template-columns: repeat(2, 1fr); }
+}
 
 .admin-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .admin-accesos { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; }
@@ -637,4 +1998,427 @@
 }
 @media (max-width: 560px) {
   .admin-kpis, .admin-kpis--5 { grid-template-columns: 1fr; }
+}
+
+/* ---- WhatsApp floating button -------------------------------------------
+   Persistent across the whole site (mounted once in app/layout.jsx). */
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #25d366;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+  z-index: 9999;
+  cursor: pointer;
+  text-decoration: none;
+}
+.whatsapp-float svg { width: 34px; height: 34px; fill: #fff; }
+
+@media (max-width: 640px) {
+  .whatsapp-float { width: 52px; height: 52px; bottom: 18px; right: 18px; }
+  .whatsapp-float svg { width: 28px; height: 28px; }
+}
+/* ============================================================================
+   LOGIN · FONDO INTERCAMBIABLE
+   ----------------------------------------------------------------------------
+   PARA CAMBIAR EL FONDO SOLO SE TOCAN LAS 3 VARIABLES DE ABAJO:
+
+   --login-bg-image     la foto (guárdala en public/backgrounds/)
+   --login-bg-position  qué parte se ve al recortar: center | top | bottom
+   --login-bg-overlay   capa oscura encima; súbela si la foto es muy clara
+   ========================================================================== */
+.login-screen {
+  --login-bg-image: url("/backgrounds/login-fondo.webp");
+  --login-bg-position: center;
+  --login-bg-overlay: rgba(18, 11, 5, 0.75);
+
+  /* --- de aquí abajo no hace falta tocar nada --- */
+  position: relative;
+  background-image: var(--login-bg-image);
+  background-size: cover;
+  background-position: var(--login-bg-position);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Capa oscura entre la foto y el contenido, para que el texto se lea. */
+.login-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--login-bg-overlay);
+  pointer-events: none;
+}
+
+/* Mantiene el contenido por encima de esa capa. */
+.login-screen > * {
+  position: relative;
+  z-index: 1;
+}
+.login-layout {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+}
+
+/* Placeholder temporal — en la Fase 3 aquí va el sobre y el logo. El borde
+   punteado es solo para que veamos el espacio mientras tanto; se quita
+   cuando pongamos la foto real. */
+.login-visual {
+  flex: 1;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(255, 255, 255, 0.4);
+  border-radius: 26px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+.login-form-col {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* Red de seguridad mínima: por debajo de este ancho, dos columnas no caben
+   bien. Ocultamos la visual para que no se vea roto mientras trabajamos.
+   El ajuste responsive completo es tarea de la Fase 7, esto es provisional. */
+/* ---- LOGIN · Columna izquierda (sobre + marca) --------------------------- */
+
+.login-visual {
+  position: relative;
+  overflow: hidden;
+  /* Quitamos el borde punteado provisional de la Fase 2 */
+  border: 1px solid rgba(214, 178, 108, 0.55);
+  border-radius: 26px;
+  aspect-ratio: 5 / 7;
+  min-height: 0;
+  max-height: 78vh;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+}
+
+/* La foto llena la tarjeta sin deformarse. */
+.login-visual__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Degradado oscuro solo abajo, para que el logo se lea sobre la foto. */
+.login-visual::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 45%;
+  background: linear-gradient(to top, rgba(12, 8, 4, 0.9), transparent);
+  pointer-events: none;
+}
+
+.login-visual__brand {
+  position: absolute;
+  left: 28px;
+  bottom: 26px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.login-visual__name {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  color: #fdf6e7;
+  line-height: 1.1;
+}
+
+.login-visual__tagline {
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: rgba(253, 246, 231, 0.75);
+}
+/* ---- LOGIN · Columna derecha: encabezado --------------------------------- */
+
+/* Ya no es una tarjeta blanca: el formulario flota sobre la foto. */
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  text-align: center;
+}
+
+.login-title {
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.4vw, 52px);
+  font-weight: 600;
+  font-style: italic;
+  color: #f4dcae;
+  line-height: 1.1;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+}
+
+.login-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+  color: #d9b878;
+}
+.login-ornament__branch { display: block; width: 96px; }
+.login-ornament__branch svg { width: 100%; height: auto; display: block; }
+.login-ornament__branch--flip { transform: scaleX(-1); }
+.login-ornament__heart { width: 17px; height: 17px; flex-shrink: 0; }
+
+.login-subtitle {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(16px, 1.7vw, 20px);
+  color: rgba(250, 240, 220, 0.92);
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.5);
+}
+/* ---- LOGIN · Campos de cristal ------------------------------------------- */
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 26px;
+}
+
+/* El contenedor es lo que se ve como "campo": el input va transparente
+   encima. Así el icono y el ojo quedan dentro sin desalinear el texto. */
+.login-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  height: 62px;
+  border-radius: 14px;
+  border: 1px solid rgba(226, 194, 138, 0.45);
+  background: rgba(28, 20, 12, 0.45);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* El resplandor aparece al enfocar cualquier cosa dentro del campo. */
+.login-field:focus-within {
+  border-color: rgba(240, 214, 160, 0.85);
+  box-shadow: 0 0 0 3px rgba(214, 178, 108, 0.18);
+}
+
+.login-field__icon {
+  flex-shrink: 0;
+  color: rgba(240, 220, 180, 0.75);
+}
+
+.login-field__input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  color: #fdf6e7;
+}
+.login-field__input::placeholder { color: rgba(245, 232, 208, 0.6); }
+
+/* Anula el fondo amarillo que Chrome pone al autocompletar. */
+.login-field__input:-webkit-autofill,
+.login-field__input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fdf6e7;
+  -webkit-box-shadow: 0 0 0 1000px rgba(28, 20, 12, 0.9) inset;
+  caret-color: #fdf6e7;
+}
+
+.login-field__eye {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: rgba(240, 220, 180, 0.65);
+  display: flex;
+  transition: color 0.15s ease;
+}
+.login-field__eye:hover { color: #f4dcae; }
+/* ---- LOGIN · Botón, enlaces y pie ---------------------------------------- */
+
+.login-forgot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -2px;
+}
+.login-forgot a {
+  font-size: 13px;
+  color: rgba(245, 232, 208, 0.75);
+  transition: color 0.15s ease;
+}
+.login-forgot a:hover { color: #f4dcae; }
+
+.login-error {
+  font-size: 13px;
+  color: #ffb4a8;
+  background: rgba(120, 30, 25, 0.35);
+  border: 1px solid rgba(255, 150, 135, 0.35);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+/* Botón principal: degradado rosa del mockup, con resplandor cálido. */
+.login-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 6px;
+  padding: 17px 24px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(100deg, #e8a09a 0%, #f0b9a8 45%, #e8a89a 100%);
+  color: #4a2118;
+  font-family: var(--font-serif);
+  font-size: 19px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 30px -10px rgba(232, 160, 154, 0.7),
+              inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.login-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 36px -10px rgba(232, 160, 154, 0.85),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.login-submit:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.login-alt {
+  margin-top: 24px;
+  font-size: 13.5px;
+  color: rgba(245, 232, 208, 0.7);
+}
+.login-alt a {
+  font-weight: 600;
+  color: #f0b9a8;
+}
+.login-alt a:hover { color: #f7d3c6; }
+
+/* Credenciales de prueba: visibles pero discretas. */
+.login-demo {
+  margin-top: 18px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: rgba(245, 232, 208, 0.45);
+}
+.login-demo__fill {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+  color: rgba(226, 194, 138, 0.8);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.login-demo__fill:hover { color: #f4dcae; }
+
+.login-back {
+  margin-top: 18px;
+  font-size: 12.5px;
+}
+.login-back a { color: rgba(245, 232, 208, 0.5); }
+.login-back a:hover { color: rgba(245, 232, 208, 0.85); }
+
+/* ---- LOGIN · Responsive --------------------------------------------------
+   Va al final a propósito: estas reglas deben sobrescribir a las de arriba,
+   y en CSS con igual especificidad gana la última. */
+
+/* Tablet y móvil: fuera el sobre, el formulario ocupa el ancho. */
+@media (max-width: 860px) {
+  .login-visual { display: none; }
+  .login-layout { max-width: 470px; gap: 0; }
+}
+
+@media (max-width: 560px) {
+  /* En pantallas bajas el centrado vertical recorta la parte de arriba y
+     queda inalcanzable; arriba + scroll normal lo evita. */
+  .auth-screen.login-screen { align-items: flex-start; padding: 32px 18px 40px; }
+  /* En móvil el fondo fijo cuesta caro en rendimiento y iOS lo ignora. */
+  .login-screen { background-attachment: scroll; }
+  .login-field { height: 56px; padding: 0 15px; gap: 10px; }
+  .login-submit { padding: 15px 20px; font-size: 17px; }
+  .login-ornament__branch { width: 68px; }
+  .login-demo { font-size: 10.5px; }
+}
+/* ---- REGISTRO · Caja anti-bot -------------------------------------------
+   Reutiliza las clases .login-* porque /login y /registro comparten el mismo
+   diseño de acceso. El prefijo dice "login" por historia, no por alcance. */
+
+.login-antibot {
+  border: 1px solid rgba(226, 194, 138, 0.3);
+  background: rgba(28, 20, 12, 0.35);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.login-antibot__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(240, 220, 180, 0.7);
+}
+
+.login-antibot__row {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: #fdf6e7;
+}
+
+.login-antibot__input {
+  width: 74px;
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(226, 194, 138, 0.45);
+  background: rgba(18, 12, 6, 0.5);
+  color: #fdf6e7;
+  font-family: inherit;
+  font-size: 15px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.login-antibot__input:focus {
+  border-color: rgba(240, 214, 160, 0.85);
+  box-shadow: 0 0 0 3px rgba(214, 178, 108, 0.18);
+}
+
+/* Con 4 campos + anti-bot la columna es más alta: en pantallas bajas hay que
+   poder desplazarse en vez de quedar centrado y recortado. */
+@media (max-height: 860px) {
+  .auth-screen.login-screen { align-items: flex-start; }
 }

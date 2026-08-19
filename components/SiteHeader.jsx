@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { motion, AnimatePresence } from "framer-motion";
 import Seal from "./Seal";
 import Icon from "./Icon";
 import { useI18n } from "./I18nProvider";
 import LangSelect from "./LangSelect";
 
 const NAV = [
-  { href: "/templates", key: "templates" },
+  { href: "/#plantillas", key: "templates" },
   { href: "/#como-funciona", key: "howItWorks" },
   { href: "/#precios", key: "pricing" },
   { href: "/#preguntas", key: "faq" },
@@ -85,7 +86,12 @@ export default function SiteHeader() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="site-header">
+    <motion.header
+      className="site-header"
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.65, 0, 0.35, 1] }}
+    >
       <div className="site-header__inner">
         <Link href="/" className="brand" onClick={() => setMobileOpen(false)}>
           <Seal size={36} />
@@ -121,30 +127,38 @@ export default function SiteHeader() {
         </div>
       </div>
 
-      {mobileOpen && (
-        <div className="mobile-nav">
-          {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className="mobile-nav__link" onClick={() => setMobileOpen(false)}>
-              {t(`nav.${n.key}`)}
-            </Link>
-          ))}
-          <div className="mobile-nav__divider" />
-          {ready && user ? (
-            <Link href="/panel" className="btn btn-dark btn-block" onClick={() => setMobileOpen(false)}>
-              {t("account.myPanel")}
-            </Link>
-          ) : (
-            <>
-              <Link href="/login" className="btn btn-outline btn-block" onClick={() => setMobileOpen(false)}>
-                {t("nav.login")}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            className="mobile-nav"
+            initial={{ opacity: 0, y: -8, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -8, height: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+          >
+            {NAV.map((n) => (
+              <Link key={n.href} href={n.href} className="mobile-nav__link" onClick={() => setMobileOpen(false)}>
+                {t(`nav.${n.key}`)}
               </Link>
-              <Link href="/registro" className="btn btn-dark btn-block" onClick={() => setMobileOpen(false)}>
-                {t("nav.signup")}
+            ))}
+            <div className="mobile-nav__divider" />
+            {ready && user ? (
+              <Link href="/panel" className="btn btn-dark btn-block" onClick={() => setMobileOpen(false)}>
+                {t("account.myPanel")}
               </Link>
-            </>
-          )}
-        </div>
-      )}
-    </header>
+            ) : (
+              <>
+                <Link href="/login" className="btn btn-outline btn-block" onClick={() => setMobileOpen(false)}>
+                  {t("nav.login")}
+                </Link>
+                <Link href="/registro" className="btn btn-dark btn-block" onClick={() => setMobileOpen(false)}>
+                  {t("nav.signup")}
+                </Link>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
   );
 }

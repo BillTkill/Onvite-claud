@@ -1,19 +1,29 @@
 /* ===========================================================================
    Onvite — design system
-   Palette marfil / oro · Fraunces + Inter
-   Tokens lifted verbatim from the Módulo 1 mockup.
+   Palette blanco / oro · Cormorant Garamond + Playfair Display + Manrope
+   Refreshed 2026-08 from "Guias visuales/onvite-mockup-v2.html" — a visual
+   polish pass, not a rebrand. --gold-soft keeps its original meaning (a pale
+   badge/background fill, used across panel + admin); the mockup's own
+   "gold-soft" concept (a mid-tone gold accent for italic sub-lines) lives in
+   the new --gold-accent token instead, so nothing existing breaks.
+
+   Type system mirrors the client-supplied reference (cardiastudios.com):
+     --font-display  Cormorant Garamond → the hero headline only
+     --font-serif    Playfair Display   → every black section title
+     --font-sans     Manrope            → body copy + uppercase sub-labels
    =========================================================================== */
 
 :root {
-  --bg: #fbf8f3;
+  --bg: #ffffff;
   --surface: #fff;
-  --ink: #1c1917;
-  --ink-soft: #57534e;
-  --gold: #b4894a;
-  --gold-deep: #8a6a34;
+  --ink: #1b1812;
+  --ink-soft: #4a4438;
+  --gold: #9c7a3c;
+  --gold-deep: #7a5f2e;
+  --gold-accent: #b08f52;
   --gold-soft: #f0e6d4;
   --sand: #f1ebe1;
-  --border: #e7dfd2;
+  --border: rgba(27, 24, 18, 0.1);
   --wine: #5b2333;
   --navy: #1e2a44;
   --success: #2f7d5b;
@@ -31,8 +41,15 @@
   --shadow-pop: 0 16px 48px rgba(28, 25, 23, 0.16);
   --radius: 16px;
 
-  --font-serif: "Fraunces", Georgia, "Times New Roman", serif;
-  --font-sans: "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --font-display: "Cormorant Garamond", "Playfair Display", Georgia, serif;
+  --font-serif: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Manrope", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+  /* Title/sub-label metrics lifted from the reference so every section
+     matches it without re-deriving the numbers at each call site. */
+  --title-tracking: -0.035em;
+  --title-leading: 1.08;
+  --sublabel-tracking: 0.16em;
 }
 
 * {
@@ -50,13 +67,19 @@ body {
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Guards the 100vw full-bleed trick (Testimonials) from ever introducing
+     horizontal scroll on the page (scrollbar-width edge case). */
+  overflow-x: hidden;
 }
 
 h1, h2, h3, h4 {
   font-family: var(--font-serif);
   text-wrap: balance;
   margin: 0;
-  letter-spacing: -0.01em;
+  /* Tight negative tracking + near-solid leading is what gives the reference
+     its editorial look; applied here so every black title inherits it. */
+  letter-spacing: var(--title-tracking);
+  line-height: var(--title-leading);
 }
 
 p {
@@ -80,6 +103,23 @@ img {
 
 .serif {
   font-family: var(--font-serif);
+}
+
+/* Hero-only display face (Cormorant Garamond), per the reference. */
+.display {
+  font-family: var(--font-display);
+}
+
+/* The uppercase letter-spaced label under a section title — the reference's
+   sub-label style. Colour stays ours (gold); only the typography is copied. */
+.sub-label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: var(--sublabel-tracking);
+  line-height: 1.8;
+  text-transform: uppercase;
+  color: var(--gold);
 }
 
 button {
@@ -202,6 +242,21 @@ button {
 
 .btn-block {
   width: 100%;
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 12.5px;
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink-soft, #6b7280);
+}
+.btn-ghost:hover {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.06);
 }
 
 .pill {

@@ -4,6 +4,9 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import Icon from "@/components/Icon";
+import Ornament from "@/components/Ornament";
+import Seal from "@/components/Seal";
 import { useI18n } from "@/components/I18nProvider";
 
 export default function RegistroPage() {
@@ -19,6 +22,7 @@ export default function RegistroPage() {
   const [form, setForm] = useState({ name: "", username: "", email: "", password: "", bot: "" });
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
+  const [showPass, setShowPass] = useState(false);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -56,60 +60,105 @@ export default function RegistroPage() {
   }
 
   return (
-    <div className="auth-screen">
-      <div className="auth-card" style={{ maxWidth: 420 }}>
-        <p className="serif" style={{ textAlign: "center", fontSize: 26, fontWeight: 700, color: "var(--brand700)" }}>{t("register.title")}</p>
-        <p style={{ textAlign: "center", color: "#6b7280", marginTop: 4, fontSize: 14 }}>{t("register.subtitle")}</p>
-
-        <button
-          type="button"
-          onClick={() => setError(t("register.googleDemo"))}
-          style={{
-            marginTop: 24, width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            border: "1px solid #d1d5db", borderRadius: 999, padding: "11px 16px", fontSize: 14, fontWeight: 600,
-            color: "#374151", background: "#fff", cursor: "pointer",
-          }}
-        >
-          <span style={{ fontSize: 18, fontWeight: 700 }}>G</span> {t("register.google")}
-        </button>
-
-        <div className="divider"><span /> {t("register.orData")} <span /></div>
-
-        <form onSubmit={onSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <input className="auth-field" placeholder={t("register.name")} value={form.name} onChange={set("name")} required />
-          <input className="auth-field" placeholder={t("register.username")} value={form.username} onChange={set("username")} required />
-          <input className="auth-field" type="email" placeholder={t("register.email")} autoComplete="email" value={form.email} onChange={set("email")} required />
-          <input className="auth-field" type="password" placeholder={t("register.password")} autoComplete="new-password" value={form.password} onChange={set("password")} required />
-
-          <div style={{ border: "1px solid #e5e7eb", background: "#f9fafb", borderRadius: 12, padding: 12 }}>
-            <p style={{ fontSize: 12, fontWeight: 600, color: "#4b5563" }}>{t("register.antibotLabel")}</p>
-            <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 14, color: "var(--ink)" }}>{t("register.antibotQuestion", { a: challenge.a, b: challenge.b })}</span>
-              <input
-                className="auth-field"
-                style={{ width: 80, padding: "6px 12px" }}
-                inputMode="numeric"
-                value={form.bot}
-                onChange={set("bot")}
-                aria-label={t("register.antibotLabel")}
-                required
-              />
+    <div className="auth-screen login-screen">
+      <div className="login-layout">
+        <div className="login-visual">
+          <img
+            className="login-visual__photo"
+            src="/backgrounds/login-sobre.webp"
+            alt=""
+            aria-hidden="true"
+          />
+          <div className="login-visual__brand">
+            <Seal size={34} />
+            <div>
+              <p className="login-visual__name">Onvite</p>
+              <p className="login-visual__tagline">{t("login.visualTagline")}</p>
             </div>
           </div>
+        </div>
 
-          {error && <p className="field-error" style={{ marginTop: 0 }}>{error}</p>}
+        <div className="login-form-col">
+          <div className="login-card">
+            <h1 className="login-title">{t("register.title")}</h1>
+            <Ornament />
+            <p className="login-subtitle">{t("register.subtitle")}</p>
 
-          <button type="submit" disabled={pending} className="btn btn-gold btn-block" style={{ padding: "11px 16px", fontSize: 14, fontWeight: 600 }}>
-            {t("register.submit")}
-          </button>
-        </form>
+            <form onSubmit={onSubmit} className="login-form">
+              <div className="login-field">
+                <Icon name="user" size={19} strokeWidth={1.6} className="login-field__icon" />
+                <input
+                  className="login-field__input" placeholder={t("register.name")}
+                  value={form.name} onChange={set("name")} required
+                />
+              </div>
 
-        <p style={{ textAlign: "center", color: "#6b7280", marginTop: 20, fontSize: 12 }}>
-          {t("register.haveAccount")} <Link href="/login" style={{ fontWeight: 600, color: "var(--brand700)" }}>{t("register.loginHere")}</Link>
-        </p>
-        <p style={{ textAlign: "center", marginTop: 12, fontSize: 12 }}>
-          <Link href="/" style={{ color: "#9ca3af" }}>{t("register.backHome")}</Link>
-        </p>
+              <div className="login-field">
+                <Icon name="at" size={19} strokeWidth={1.6} className="login-field__icon" />
+                <input
+                  className="login-field__input" placeholder={t("register.username")}
+                  value={form.username} onChange={set("username")} required
+                />
+              </div>
+
+              <div className="login-field">
+                <Icon name="mail" size={19} strokeWidth={1.6} className="login-field__icon" />
+                <input
+                  className="login-field__input" type="email" placeholder={t("register.email")}
+                  autoComplete="email" value={form.email} onChange={set("email")} required
+                />
+              </div>
+
+              <div className="login-field">
+                <Icon name="lock" size={19} strokeWidth={1.6} className="login-field__icon" />
+                <input
+                  className="login-field__input" type={showPass ? "text" : "password"}
+                  placeholder={t("register.password")} autoComplete="new-password"
+                  value={form.password} onChange={set("password")} required
+                />
+                <button
+                  type="button"
+                  className="login-field__eye"
+                  onClick={() => setShowPass((v) => !v)}
+                  aria-label={showPass ? t("login.hidePassword") : t("login.showPassword")}
+                >
+                  <Icon name={showPass ? "eyeOff" : "eye"} size={19} strokeWidth={1.6} />
+                </button>
+              </div>
+
+              {/* Verificación anti-bot: suma simple, sin servicios externos. */}
+              <div className="login-antibot">
+                <p className="login-antibot__label">{t("register.antibotLabel")}</p>
+                <div className="login-antibot__row">
+                  <span>{t("register.antibotQuestion", { a: challenge.a, b: challenge.b })}</span>
+                  <input
+                    className="login-antibot__input"
+                    inputMode="numeric"
+                    value={form.bot}
+                    onChange={set("bot")}
+                    aria-label={t("register.antibotLabel")}
+                    required
+                  />
+                </div>
+              </div>
+
+              {error && <p className="login-error">{error}</p>}
+
+              <button type="submit" disabled={pending} className="login-submit">
+                <Icon name="rings" size={20} strokeWidth={1.5} />
+                {t("register.submit")}
+              </button>
+            </form>
+
+            <p className="login-alt">
+              {t("register.haveAccount")} <Link href="/login">{t("register.loginHere")}</Link>
+            </p>
+
+            <p className="login-back">
+              <Link href="/">{t("register.backHome")}</Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

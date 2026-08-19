@@ -14,7 +14,7 @@ export default function NotFound() {
         <p style={{ color: "var(--ink-soft)", marginTop: 12, fontSize: 15, lineHeight: 1.6 }}>{t("notFound.body")}</p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 28, flexWrap: "wrap" }}>
           <Link href="/" className="btn btn-dark">{t("notFound.home")}</Link>
-          <Link href="/templates" className="btn btn-outline">{t("notFound.templates")}</Link>
+          <Link href="/#plantillas" className="btn btn-outline">{t("notFound.templates")}</Link>
         </div>
       </div>
     </div>

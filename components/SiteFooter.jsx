@@ -1,39 +1,42 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import Icon from "./Icon";
+import Seal from "./Seal";
 import { useI18n } from "./I18nProvider";
 
 export default function SiteFooter() {
   const { t } = useI18n();
   return (
-    <footer className="site-footer">
-      <div className="container site-footer__inner">
-        <div className="center">
-          <p className="serif" style={{ fontSize: 20, fontWeight: 600 }}>Onvite</p>
-          <p style={{ color: "var(--ink-soft)", marginTop: 4, fontSize: 14 }}>{t("footer.tagline")}</p>
-        </div>
-        <div className="site-footer__contacts">
-          <a className="footer-pill" href="mailto:hola@onvite.com">
-            <Icon name="mail" size={15} /> hola@onvite.com
-          </a>
-          <a className="footer-pill" href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-            <Icon name="instagram" size={15} /> Instagram
-          </a>
-          <a className="footer-pill" href="https://wa.me/59100000000" target="_blank" rel="noopener noreferrer">
-            WhatsApp
-          </a>
-        </div>
-        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
-          <Link href="/terminos" className="site-footer__terms">
-            {t("footer.terms")}
-          </Link>
-          <Link href="/privacidad" className="site-footer__terms">
-            {t("footer.privacy")}
-          </Link>
-        </div>
-        <p style={{ color: "var(--ink-soft)", fontSize: 12 }}>{t("footer.rights")}</p>
+    <motion.footer
+      className="site-footer"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      <div className="footer-logo"><Seal size={34} /></div>
+      <p className="serif fname">Onvite</p>
+      <p className="ftag">{t("footer.tagline")}</p>
+
+      <div className="footer-links">
+        <a href="mailto:hola@onvite.com"><Icon name="mail" size={14} /> hola@onvite.com</a>
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"><Icon name="instagram" size={14} /> Instagram</a>
+        <a href="https://wa.me/59100000000" target="_blank" rel="noopener noreferrer"><Icon name="share" size={14} /> WhatsApp</a>
       </div>
-    </footer>
+
+      {/* Full-bleed gold bar closing the page — same band treatment as the
+          Testimonials section (see .testimonios-wrap in ui.css). */}
+      <div className="footer-legal-wrap">
+        <div className="footer-legal-bar">
+          <div className="footer-legal">
+            <Link href="/terminos">{t("footer.terms")}</Link>
+            <Link href="/privacidad">{t("footer.privacy")}</Link>
+          </div>
+          <p className="footer-copy">{t("footer.rights")}</p>
+        </div>
+      </div>
+    </motion.footer>
   );
 }
