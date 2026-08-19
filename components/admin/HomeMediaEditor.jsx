@@ -15,6 +15,9 @@ function keyOf(kind, position) {
 async function uploadFile(file) {
   const fd = new FormData();
   fd.append("file", file);
+  // Site decoration: re-encoded to WebP server-side. Guest album uploads
+  // deliberately skip this — that plan promises original quality.
+  fd.append("optimize", "web");
   const res = await fetch("/api/upload", { method: "POST", body: fd });
   const data = await res.json();
   if (!data.ok || !data.url) throw new Error(data.error || "upload_failed");
