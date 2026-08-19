@@ -10,7 +10,7 @@ import { useI18n } from "./I18nProvider";
  */
 export default function TemplateCard({ template }) {
   const { t } = useI18n();
-  const { slug, name, grad, ink, best } = template;
+  const { slug, name, grad, ink, best, code } = template;
   const desc = t(`templateDesc.${slug}`);
   return (
     <Link href={`/templates/${slug}`} className="tpl-card">
@@ -25,6 +25,7 @@ export default function TemplateCard({ template }) {
       </div>
       <div className="tpl-card__body">
         <h3 className="serif tpl-card__title">{name}</h3>
+        {code && <p className="tpl-code">{t("templates.templateId")}: {code}</p>}
         <p className="tpl-card__desc">{desc}</p>
         <span className="tpl-card__cta">
           {t("templates.viewTemplate")} <Icon name="arrowUpRight" size={14} />

@@ -1,10 +1,15 @@
 import { notFound } from "next/navigation";
 import TemplateDetailView from "@/components/TemplateDetailView";
 import { TEMPLATES, getTemplate } from "@/lib/templates";
+import { getTemplatePage } from "@/lib/template-queries";
 
 export function generateStaticParams() {
   return TEMPLATES.map((t) => ({ slug: t.slug }));
 }
+
+// Admin-managed artwork lives in the database, so the page is rendered per
+// request rather than frozen at build time — an upload shows up immediately.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -21,6 +26,6 @@ export default async function TemplateDetailPage({ params }) {
   const template = getTemplate(slug);
   if (!template) notFound();
 
-  const related = TEMPLATES.filter((t) => t.slug !== slug).slice(0, 4);
-  return <TemplateDetailView template={template} related={related} />;
+  const page = await getTemplatePage(slug);
+  return <TemplateDetailView template={template} page={page} />;
 }

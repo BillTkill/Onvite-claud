@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db";
 import { auth } from "@/auth";
 import { planStringToEnum } from "@/lib/admin-display";
 import { slugify } from "@/lib/format";
+import { TEMPLATES } from "@/lib/templates";
 
 /** Every admin mutation goes through this guard first. */
 async function requireAdmin() {
@@ -366,5 +367,128 @@ export async function adminRemoveGift(giftId) {
   await prisma.gift.delete({ where: { id: giftId } });
   refreshAdmin();
   revalidatePath("/panel/regalos");
+  return { ok: true };
+}
+
+/* ---- Inicio: media del showcase (plantillas/sobres/celular) + galería --- */
+const HomeMediaKindEnum = z.enum(["SHOWCASE_CARD", "SHOWCASE_ENVELOPE", "PHONE_MOCK"]);
+
+/** Upload sets (or replaces) the image for one showcase slot. `imageUrl`
+ * comes from /api/upload (already stored) — this just persists the link. */
+export async function saveHomeMedia(raw) {
+  await requireAdmin();
+  const d = z.object({
+    kind: HomeMediaKindEnum,
+    position: z.coerce.number().int().min(0).max(63),
+    imageUrl: z.string().trim().min(1).max(500),
+    label: z.string().trim().max(120).optional().or(z.literal("")),
+  }).parse(raw);
+
+  await prisma.homeMedia.upsert({
+    where: { kind_position: { kind: d.kind, position: d.position } },
+    update: { imageUrl: d.imageUrl, label: d.label || null },
+    create: { kind: d.kind, position: d.position, imageUrl: d.imageUrl, label: d.label || null },
+  });
+  refreshAdmin();
+  revalidatePath("/");
+  return { ok: true };
+}
+
+/** Clears a slot back to the built-in placeholder design. */
+export async function clearHomeMedia(kind, position) {
+  await requireAdmin();
+  const k = HomeMediaKindEnum.parse(kind);
+  const pos = z.coerce.number().int().min(0).max(63).parse(position);
+  await prisma.homeMedia.deleteMany({ where: { kind: k, position: pos } });
+  refreshAdmin();
+  revalidatePath("/");
+  return { ok: true };
+}
+
+/** Replaces the full "trending" gallery selection/order in one go. */
+export async function saveGalleryFeatures(list) {
+  await requireAdmin();
+  const items = z.array(z.object({
+    slug: z.string().trim().min(1).max(80),
+    position: z.coerce.number().int().min(0).max(99),
+    trending: z.boolean().default(false),
+    imageUrl: z.string().trim().max(500).nullish(),
+    imageUrlBack: z.string().trim().max(500).nullish(),
+  })).max(24).parse(list);
+
+  await prisma.$transaction([
+    prisma.galleryFeature.deleteMany({}),
+    ...items.map((it) =>
+      prisma.galleryFeature.create({
+        data: {
+          slug: it.slug,
+          position: it.position,
+          trending: it.trending,
+          imageUrl: it.imageUrl || null,
+          imageUrlBack: it.imageUrlBack || null,
+        },
+      })
+    ),
+  ]);
+  refreshAdmin();
+  revalidatePath("/");
+  return { ok: true };
+}
+
+const TemplateThemeEnum = z.enum(["DARK", "LIGHT"]);
+/** Empty string clears a slot; anything else must look like an upload URL. */
+const ImageSlot = z.string().trim().max(500).optional().or(z.literal(""));
+
+/**
+ * Upserts one template's detail-page artwork (/templates/[slug]).
+ * Slug is validated against the static catalogue rather than trusted, so a
+ * stale or hand-crafted form cannot create rows for templates that no longer
+ * exist. Empty strings are stored as null — "no upload", not "empty image".
+ */
+export async function saveTemplatePage(raw) {
+  await requireAdmin();
+  const d = z.object({
+    slug: z.string().trim().min(1).max(80),
+    theme: TemplateThemeEnum.default("DARK"),
+    // Capped: past ~24px the artwork stops reading as a photograph at all.
+    backgroundBlur: z.coerce.number().int().min(0).max(24).default(3),
+    backgroundUrl: ImageSlot,
+    mainImageUrl: ImageSlot,
+    shot1Url: ImageSlot,
+    shot2Url: ImageSlot,
+    shot3Url: ImageSlot,
+    shot4Url: ImageSlot,
+  }).parse(raw);
+
+  if (!TEMPLATES.some((t) => t.slug === d.slug)) throw new Error("Plantilla desconocida");
+
+  const data = {
+    theme: d.theme,
+    backgroundBlur: d.backgroundBlur,
+    backgroundUrl: d.backgroundUrl || null,
+    mainImageUrl: d.mainImageUrl || null,
+    shot1Url: d.shot1Url || null,
+    shot2Url: d.shot2Url || null,
+    shot3Url: d.shot3Url || null,
+    shot4Url: d.shot4Url || null,
+  };
+
+  await prisma.templatePage.upsert({
+    where: { slug: d.slug },
+    update: data,
+    create: { slug: d.slug, ...data },
+  });
+  refreshAdmin();
+  revalidatePath(`/templates/${d.slug}`);
+  return { ok: true };
+}
+
+/** Drops the whole row, returning the page to its built-in gradient poster. */
+export async function clearTemplatePage(slug) {
+  await requireAdmin();
+  const s = z.string().trim().min(1).max(80).parse(slug);
+  await prisma.templatePage.deleteMany({ where: { slug: s } });
+  refreshAdmin();
+  revalidatePath(`/templates/${s}`);
   return { ok: true };
 }

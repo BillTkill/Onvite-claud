@@ -32,6 +32,13 @@ export const authConfig = {
         if (role !== "ADMIN") return Response.redirect(new URL("/panel", nextUrl));
         return true;
       }
+      // The full catalogue is an internal inventory: visitors browse templates
+      // from the Home gallery instead. Matched exactly, not by prefix, so the
+      // public detail pages at /templates/<slug> stay reachable by anyone.
+      if (pathname === "/templates") {
+        if (role !== "ADMIN") return Response.redirect(new URL("/#plantillas", nextUrl));
+        return true;
+      }
       if (pathname.startsWith("/panel")) {
         return isLoggedIn; // false -> redirected to signIn page
       }

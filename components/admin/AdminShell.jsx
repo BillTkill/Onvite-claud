@@ -12,6 +12,8 @@ const NAV = [
   { href: "/admin/usuarios", key: "usuarios", icon: "users" },
   { href: "/admin/clientes", key: "clientes", icon: "user" },
   { href: "/admin/paneles", key: "paneles", icon: "settings" },
+  { href: "/admin/inicio", key: "inicio", icon: "image" },
+  { href: "/admin/plantillas", key: "plantillas", icon: "grid" },
   { href: "/admin/accesos", key: "accesos", icon: "key" },
   { href: "/admin/consultas", key: "consultas", icon: "mail" },
   { href: "/admin/redes", key: "redes", icon: "share" },
