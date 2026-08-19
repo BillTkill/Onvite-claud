@@ -76,36 +76,36 @@ model User {
 /// The couple's wedding. A user with an active Event sees their panel; without
 /// one (or with active = false) they see the "locked panel".
 model Event {
-  id                 String   @id @default(cuid())
-  owner              User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  ownerId            String   @unique
-  coupleName         String
-  title              String
-  dateTime           DateTime
-  venue              String
-  address            String?
-  dressCode          String?
-  plan               Plan     @default(BASICO)
-  designName         String?
-  templateSlug       String?
-  totalGuests        Int      @default(0)
-  music              String?
+  id                  String   @id @default(cuid())
+  owner               User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId             String   @unique
+  coupleName          String
+  title               String
+  dateTime            DateTime
+  venue               String
+  address             String?
+  dressCode           String?
+  plan                Plan     @default(BASICO)
+  designName          String?
+  templateSlug        String?
+  totalGuests         Int      @default(0)
+  music               String?
   albumPhotosPerGuest Int?
-  albumDays          Int?
-  accessDurationDays Int?
-  musicAutoplay      Boolean  @default(true)
-  musicUrl           String?  // uploaded background-music file (/uploads/…)
-  paymentQr          String?  // couple's payment link / QR data (rendered as a QR)
-  albumUrl           String?  // album link override (else auto from the couple slug)
-  albumModerate      Boolean  @default(false) // review guest photos before publishing
-  slug               String?  // public invitation URL slug (/i/<slug>)
-  active             Boolean  @default(true)
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  albumDays           Int?
+  accessDurationDays  Int?
+  musicAutoplay       Boolean  @default(true)
+  musicUrl            String? // uploaded background-music file (/uploads/…)
+  paymentQr           String? // couple's payment link / QR data (rendered as a QR)
+  albumUrl            String? // album link override (else auto from the couple slug)
+  albumModerate       Boolean  @default(false) // review guest photos before publishing
+  slug                String? // public invitation URL slug (/i/<slug>)
+  active              Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
-  guests             Guest[]
-  gifts              Gift[]
-  photos             Photo[]
+  guests Guest[]
+  gifts  Gift[]
+  photos Photo[]
 }
 
 /// A photo/video uploaded by a guest to the couple's shared album.
@@ -113,7 +113,7 @@ model Photo {
   id           String   @id @default(cuid())
   event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId      String
-  url          String   // /uploads/<file>
+  url          String // /uploads/<file>
   uploaderName String?
   approved     Boolean  @default(true)
   createdAt    DateTime @default(now())
@@ -192,4 +192,76 @@ model Consulta {
   text       String
   receivedAt DateTime        @default(now())
   attended   Boolean         @default(false)
+}
+
+enum HomeMediaKind {
+  SHOWCASE_CARD // top marquee row on the Home hero showcase
+  SHOWCASE_ENVELOPE // bottom marquee row
+  PHONE_MOCK // the centered phone mockup between the two rows
+}
+
+/// Admin-managed image for one slot of the Home showcase (marquee cards,
+/// envelopes, or the phone mockup). `imageUrl` null means "no upload yet" —
+/// the public Home falls back to the built-in CSS-drawn placeholder for
+/// that slot (see lib/home-data.js), so an empty slot never breaks the page.
+model HomeMedia {
+  id        String        @id @default(cuid())
+  kind      HomeMediaKind
+  position  Int
+  imageUrl  String?
+  label     String?
+  updatedAt DateTime      @updatedAt
+
+  @@unique([kind, position])
+}
+
+/// Which real templates (lib/templates.js catalog, by slug) the admin has
+/// chosen to feature in the Home "Diseños creados para su historia" gallery,
+/// in what order, and which are flagged as trending/best-selling there.
+///
+/// Each card renders two overlapping phone mock-ups, so it carries two
+/// images: `imageUrl` is the front (large) mock-up and `imageUrlBack` the
+/// one peeking out behind it. Either may be null — the card falls back to the
+/// catalogue's CSS gradient preview for whichever is missing.
+model GalleryFeature {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  position     Int
+  trending     Boolean  @default(false)
+  imageUrl     String?
+  imageUrlBack String?
+  updatedAt    DateTime @updatedAt
+}
+
+/// Whether a template's public detail page (/templates/[slug]) renders its
+/// information panel on a dark or a light ground. It is per template on
+/// purpose: the catalogue mixes moods — a sunset beach wedding wants the dark
+/// treatment, a pastel birthday does not — and the admin decides per page.
+enum TemplatePageTheme {
+  DARK
+  LIGHT
+}
+
+/// Admin-managed artwork for one template's detail page, one row per
+/// catalogue slug (lib/templates.js). Every image is optional: the page falls
+/// back to the catalogue's built-in CSS gradient for whatever is missing, so
+/// a half-filled row never breaks the page.
+///
+/// The four shots are explicit columns rather than a child table because the
+/// count is fixed by the design (a four-thumbnail strip beside the main
+/// poster) — the same shape GalleryFeature already uses for its two images.
+model TemplatePage {
+  slug          String            @id
+  theme         TemplatePageTheme @default(DARK)
+  /// Blur radius in pixels applied to `backgroundUrl` on the public page.
+  /// 0 leaves the artwork sharp; the default softens it just enough to keep
+  /// the panel text legible over a busy photograph.
+  backgroundBlur Int     @default(3)
+  backgroundUrl String?
+  mainImageUrl  String?
+  shot1Url      String?
+  shot2Url      String?
+  shot3Url      String?
+  shot4Url      String?
+  updatedAt     DateTime          @updatedAt
 }
